@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register – Project Management System</title>
+  <meta name="description" content="Create your account as a Project Manager or Project Member." />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-wrapper auth-wrapper--wide">
+
+    <!-- ═══════════════════════════════════════
+         LEFT PANEL  –  Illustration / Branding
+    ════════════════════════════════════════ -->
+    <div class="auth-panel-left">
+
+      <div class="brand">
+        <img src="assets/images/brand-logo.png" alt="ProManage Logo" class="brand-icon-img" />
+        <span class="brand-name">ProManage</span>
+      </div>
+
+      <div class="illustration-wrap">
+        <div class="illustration-img-wrap">
+          <img
+            src="assets/images/login-illustration.png"
+            alt="Project management illustration"
+            class="login-illustration"
+          />
+        </div>
+
+        <div class="role-badges">
+          <span class="role-badge manager">
+            <span class="dot"></span> Project Manager
+          </span>
+          <span class="role-badge member">
+            <span class="dot"></span> Project Member
+          </span>
+        </div>
+
+        <p class="panel-tagline">
+          Join the platform.<br/>
+          Manage projects or collaborate with your team.
+        </p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         RIGHT PANEL  –  Register Form
+    ════════════════════════════════════════ -->
+    <div class="auth-panel-right">
+
+      <div class="auth-header">
+        <h1>Create an account ✨</h1>
+        <p id="registerSubtitle">Choose your role to get started.</p>
+      </div>
+
+      <!-- ── Role Toggle ── -->
+      <div class="role-toggle" role="group" aria-label="Select registration role">
+        <input type="radio" id="role-manager" name="role" value="manager" checked />
+        <label for="role-manager">
+          <span>👔</span> Project Manager
+        </label>
+        <input type="radio" id="role-member" name="role" value="member" />
+        <label for="role-member">
+          <span>👤</span> Project Member
+        </label>
+      </div>
+
+      <!-- ── Registration Form ── -->
+      <form class="auth-form" id="registerForm" novalidate autocomplete="off">
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="field-label" for="regEmail">Email Address</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              id="regEmail"
+              name="email"
+              placeholder="you@example.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label class="field-label" for="regUsername">Username</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              id="regUsername"
+              name="username"
+              placeholder="Choose a username"
+              required
+              autocomplete="username"
+            />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="field-label" for="regPassword">Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="regPassword"
+              name="password"
+              placeholder="Create a strong password"
+              required
+              autocomplete="new-password"
+            />
+            <button type="button" class="toggle-pw" id="togglePassword" aria-label="Toggle password visibility">
+              👁️
+            </button>
+          </div>
+          <!-- Password strength bar -->
+          <div class="pw-strength" id="pwStrength" aria-hidden="true">
+            <div class="pw-strength-bar" id="pwStrengthBar"></div>
+          </div>
+          <span class="pw-strength-label" id="pwStrengthLabel"></span>
+        </div>
+
+        <!-- ── Member-only: Project ID ── -->
+        <div class="form-group member-only" id="projectIdGroup" style="display:none;">
+          <label class="field-label" for="projectId">
+            Project ID
+            <span class="field-hint" title="Ask your Project Manager for this ID">ⓘ</span>
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">📋</span>
+            <input
+              type="text"
+              id="projectId"
+              name="projectId"
+              placeholder="Enter the Project ID from your manager"
+              autocomplete="off"
+            />
+          </div>
+          <p class="field-desc">
+            Your manager will share this ID with you so you can join their project.
+          </p>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-login" id="registerBtn">
+          <div class="spinner"></div>
+          <span class="btn-text">Create Account</span>
+        </button>
+
+        <!-- Error / Success messages -->
+        <div class="auth-error" id="regError" role="alert">
+          <span>⚠️</span>
+          <span id="regErrorMsg">Something went wrong. Please try again.</span>
+        </div>
+
+        <div class="auth-success" id="regSuccess" role="status">
+          <span>✅</span>
+          <span id="regSuccessMsg">Account created! Redirecting to login…</span>
+        </div>
+
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <div class="auth-footer">
+        Already have an account? &nbsp;
+        <a href="login.html">Sign in here</a>
+      </div>
+
+    </div>
+    <!-- /auth-panel-right -->
+
+  </div>
+  <!-- /auth-wrapper -->
+
+  <script src="js/register.js"></script>
+</body>
+</html>

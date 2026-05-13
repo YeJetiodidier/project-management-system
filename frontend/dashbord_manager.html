@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Project Manager | ProManage</title>
+  <meta name="description" content="Project Manager Dashboard – overview of projects, tasks, work logs, and team performance." />
+  <link rel="stylesheet" href="css/dashbord.css" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="js/dashbord.js" defer></script>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashbord_manager.html" class="sidebar-brand">
+      <img src="assets/images/brand-logo.png" alt="ProManage" />
+      <span class="sidebar-brand-name">ProManage</span>
+    </a>
+
+    <nav class="sidebar-nav" aria-label="Manager navigation">
+      <span class="nav-section-label">Main</span>
+
+      <a href="dashbord_manager.html" class="nav-item active" id="nav-dashboard">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+
+      <a href="project.html" class="nav-item" id="nav-projects">
+        <span class="nav-icon">📁</span> Projects
+        <span class="nav-badge" id="badge-projects">4</span>
+      </a>
+
+      <a href="task.html" class="nav-item" id="nav-tasks">
+        <span class="nav-icon">✅</span> Tasks
+        <span class="nav-badge" id="badge-tasks">12</span>
+      </a>
+
+      <a href="team.html" class="nav-item" id="nav-team">
+        <span class="nav-icon">👥</span> Team
+      </a>
+
+      <a href="files.html" class="nav-item" id="nav-files">
+        <span class="nav-icon">📎</span> Files
+      </a>
+
+      <span class="nav-section-label" style="margin-top:12px;">Analytics</span>
+
+      <a href="#" class="nav-item" id="nav-worklogs">
+        <span class="nav-icon">📊</span> Work Logs
+      </a>
+
+      <a href="#" class="nav-item" id="nav-performance">
+        <span class="nav-icon">📈</span> Performance
+      </a>
+
+      <span class="nav-section-label" style="margin-top:12px;">Account</span>
+
+      <a href="notification.html" class="nav-item" id="nav-notifications">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge" id="badge-notif">3</span>
+      </a>
+
+      <a href="profile.html" class="nav-item" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <!-- Sidebar user footer -->
+    <div class="sidebar-footer">
+      <a href="profile.html" class="sidebar-user" title="View profile">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">M</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarName">Manager</div>
+          <div class="sidebar-user-role">Project Manager</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:14px;">⚙️</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ══════════════════════════════════════
+       MAIN AREA
+  ══════════════════════════════════════ -->
+  <div class="dashboard-root">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <h1 class="topbar-title">Dashboard</h1>
+
+      <!-- Search -->
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" placeholder="Search projects, tasks…" id="globalSearch" />
+      </div>
+
+      <!-- Notifications -->
+      <a href="notification.html" class="topbar-icon-btn" title="Notifications">
+        🔔
+        <span class="notif-dot"></span>
+      </a>
+
+      <!-- Profile avatar -->
+      <a href="profile.html" class="topbar-avatar" id="topbarAvatar" title="Profile">M</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+
+      <!-- ── Summary Stats ── -->
+      <div class="stats-row">
+
+        <div class="stat-card">
+          <div class="stat-icon blue">📁</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statProjects">4</div>
+            <div class="stat-label">Active Projects</div>
+          </div>
+          <span class="stat-delta up">+1 ↑</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon cyan">✅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statTasks">28</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <span class="stat-delta up">+5 ↑</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">👥</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statMembers">9</div>
+            <div class="stat-label">Team Members</div>
+          </div>
+          <span class="stat-delta up">+2 ↑</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">📎</div>
+          <div class="stat-info">
+            <div class="stat-value" id="statFiles">52</div>
+            <div class="stat-label">Files Uploaded</div>
+          </div>
+          <span class="stat-delta down">-3 ↓</span>
+        </div>
+
+      </div>
+
+      <!-- ── Widget Grid ── -->
+      <div class="widget-grid">
+
+        <!-- ① Projects Widget -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span class="card-title">Projects</span>
+            <span class="card-meta"><span>📁</span> 52 files</span>
+          </div>
+          <div class="project-list" id="projectList">
+
+            <a href="project.html" class="project-row">
+              <span class="project-color" style="background:#6d63f5;"></span>
+              <div class="project-info">
+                <div class="project-name">Mobile App Redesign</div>
+                <div class="project-sub">5 members · Due Jun 30</div>
+              </div>
+              <div class="project-progress-wrap">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:72%"></div></div>
+                <span class="progress-pct">72%</span>
+              </div>
+            </a>
+
+            <a href="project.html" class="project-row">
+              <span class="project-color" style="background:#06b6d4;"></span>
+              <div class="project-info">
+                <div class="project-name">Backend API v2</div>
+                <div class="project-sub">3 members · Due Jul 15</div>
+              </div>
+              <div class="project-progress-wrap">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:45%"></div></div>
+                <span class="progress-pct">45%</span>
+              </div>
+            </a>
+
+            <a href="project.html" class="project-row">
+              <span class="project-color" style="background:#10b981;"></span>
+              <div class="project-info">
+                <div class="project-name">Marketing Dashboard</div>
+                <div class="project-sub">4 members · Due Aug 1</div>
+              </div>
+              <div class="project-progress-wrap">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:88%"></div></div>
+                <span class="progress-pct">88%</span>
+              </div>
+            </a>
+
+            <a href="project.html" class="project-row">
+              <span class="project-color" style="background:#f59e0b;"></span>
+              <div class="project-info">
+                <div class="project-name">E-commerce Platform</div>
+                <div class="project-sub">6 members · Due Sep 10</div>
+              </div>
+              <div class="project-progress-wrap">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:30%"></div></div>
+                <span class="progress-pct">30%</span>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ② Tasks Widget (donut) -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span class="card-title">Tasks</span>
+            <span class="card-badge">This Week ▾</span>
+          </div>
+          <div class="donut-row">
+            <div class="chart-wrap" style="max-width:200px;">
+              <canvas id="tasksChart" width="200" height="200"></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#10b981;"></span>
+                Completed <span class="legend-pct">32%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#6d63f5;"></span>
+                On Hold <span class="legend-pct">25%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#06b6d4;"></span>
+                In Progress <span class="legend-pct">25%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#ef4444;"></span>
+                Pending <span class="legend-pct">18%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ Work Log Widget (donut) -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span class="card-title">Work Log</span>
+            <span class="card-badge">This Week ▾</span>
+          </div>
+          <div class="donut-row">
+            <div class="chart-wrap" style="max-width:200px;">
+              <canvas id="worklogChart" width="200" height="200"></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#ef4444;"></span>
+                App Design <span class="legend-pct">30%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#06b6d4;"></span>
+                Backend <span class="legend-pct">25%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#10b981;"></span>
+                Testing <span class="legend-pct">20%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#f59e0b;"></span>
+                Marketing <span class="legend-pct">15%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#6d63f5;"></span>
+                Other <span class="legend-pct">10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ Performance Widget (line chart) -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span class="card-title">Performance</span>
+            <span class="card-badge">This Week ▾</span>
+          </div>
+          <div class="line-chart-wrap">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+      <!-- /widget-grid -->
+
+    </main>
+  </div>
+
+</body>
+</html>

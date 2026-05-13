@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Project Management System</title>
+  <meta name="description" content="Sign in to the Project Management System as a Project Manager or Project Member." />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-wrapper">
+
+    <!-- ═══════════════════════════════════════
+         LEFT PANEL  –  Illustration / Branding
+    ════════════════════════════════════════ -->
+    <div class="auth-panel-left">
+
+      <!-- Brand -->
+      <div class="brand">
+        <img src="assets/images/brand-logo.png" alt="ProManage Logo" class="brand-icon-img" />
+        <span class="brand-name">ProManage</span>
+      </div>
+
+      <!-- Illustration area -->
+      <div class="illustration-wrap">
+
+        <!-- Login Illustration -->
+        <div class="illustration-img-wrap">
+          <img
+            src="assets/images/login-illustration.png"
+            alt="Project management secure login illustration"
+            class="login-illustration"
+          />
+        </div>
+
+        <!-- Role badges -->
+        <div class="role-badges">
+          <span class="role-badge manager">
+            <span class="dot"></span> Project Manager
+          </span>
+          <span class="role-badge member">
+            <span class="dot"></span> Project Member
+          </span>
+        </div>
+
+        <p class="panel-tagline">
+          One platform. Two roles.<br/>
+          Collaborate, track, and deliver projects seamlessly.
+        </p>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         RIGHT PANEL  –  Login Form
+    ════════════════════════════════════════ -->
+    <div class="auth-panel-right">
+
+      <div class="auth-header">
+        <h1>Welcome back 👋</h1>
+        <p>Select your role and enter your credentials to sign in.</p>
+      </div>
+
+      <!-- ── Role Toggle ── -->
+      <div class="role-toggle" role="group" aria-label="Select login role">
+        <input type="radio" id="role-manager" name="role" value="manager" checked />
+        <label for="role-manager">
+          <span>👔</span> Project Manager
+        </label>
+        <input type="radio" id="role-member" name="role" value="member" />
+        <label for="role-member">
+          <span>👤</span> Project Member
+        </label>
+      </div>
+
+      <!-- ── Login Form ── -->
+      <form class="auth-form" id="loginForm" novalidate autocomplete="off">
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="field-label" for="email">Email Address</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- Second credential – switches between Username (manager) and User ID (member) -->
+        <div class="form-group">
+          <label class="field-label" id="credLabel" for="credInput">Username</label>
+          <div class="input-wrap">
+            <span class="input-icon" id="credIcon">👤</span>
+            <input
+              type="text"
+              id="credInput"
+              name="username"
+              placeholder="Enter your username"
+              required
+              autocomplete="off"
+              data-manager-label="Username"
+              data-manager-placeholder="Enter your username"
+              data-manager-icon="👤"
+              data-manager-name="username"
+              data-member-label="User ID"
+              data-member-placeholder="Enter your User ID"
+              data-member-icon="🆔"
+              data-member-name="userId"
+            />
+            <button type="button" class="toggle-pw" id="toggleCred" aria-label="Toggle credential visibility">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-login" id="loginBtn">
+          <div class="spinner"></div>
+          <span class="btn-text">Sign In</span>
+        </button>
+
+        <!-- Error message -->
+        <div class="auth-error" id="authError" role="alert">
+          <span>⚠️</span>
+          <span id="authErrorMsg">Invalid credentials. Please try again.</span>
+        </div>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="auth-divider">or</div>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        Don't have an account? &nbsp;
+        <a href="signup.html" id="signupLink">Register here</a>
+      </div>
+
+    </div>
+    <!-- /auth-panel-right -->
+
+  </div>
+  <!-- /auth-wrapper -->
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
