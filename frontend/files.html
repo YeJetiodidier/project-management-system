@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Files – ProManage</title>
+  <meta name="description" content="Files management page for ProManage with document sharing and collaboration." />
+  <link rel="stylesheet" href="css/dashbord.css" />
+  <link rel="stylesheet" href="css/files.css" />
+  <script src="js/nav.js" defer></script>
+  <script src="js/files.js" defer></script>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashbord_manager.html" class="sidebar-brand">
+      <img src="assets/images/brand-logo.png" alt="ProManage" />
+      <span class="sidebar-brand-name">ProManage</span>
+    </a>
+
+    <nav class="sidebar-nav" aria-label="Manager navigation">
+      <span class="nav-section-label">Main</span>
+
+      <a href="dashbord_manager.html" class="nav-item" id="nav-dashboard">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+
+      <a href="project.html" class="nav-item" id="nav-projects">
+        <span class="nav-icon">📁</span> Projects
+        <span class="nav-badge" id="badge-projects">4</span>
+      </a>
+
+      <a href="task.html" class="nav-item" id="nav-tasks">
+        <span class="nav-icon">✅</span> Tasks
+        <span class="nav-badge" id="badge-tasks">12</span>
+      </a>
+
+      <a href="team.html" class="nav-item" id="nav-team">
+        <span class="nav-icon">👥</span> Team
+      </a>
+
+      <a href="files.html" class="nav-item active" id="nav-files">
+        <span class="nav-icon">📎</span> Files
+      </a>
+
+      <span class="nav-section-label" style="margin-top:12px;">Analytics</span>
+
+      <a href="#" class="nav-item" id="nav-worklogs">
+        <span class="nav-icon">📊</span> Work Logs
+      </a>
+
+      <a href="#" class="nav-item" id="nav-performance">
+        <span class="nav-icon">📈</span> Performance
+      </a>
+
+      <span class="nav-section-label" style="margin-top:12px;">Account</span>
+
+      <a href="notification.html" class="nav-item" id="nav-notifications">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge" id="badge-notif">3</span>
+      </a>
+
+      <a href="profile.html" class="nav-item" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="profile.html" class="sidebar-user" title="View profile">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">M</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarName">Manager</div>
+          <div class="sidebar-user-role">Project Manager</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:14px;">⚙️</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <div class="dashboard-root">
+
+    <header class="topbar">
+      <h1 class="topbar-title">FILES</h1>
+
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search files…" />
+      </div>
+
+      <button class="btn-primary" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Upload File
+      </button>
+    </header>
+
+    <main class="main-content" id="mainContent">
+      <p style="color: var(--text-secondary);">Files page content coming soon...</p>
+    </main>
+
+  </div>
+
+</body>
+</html>

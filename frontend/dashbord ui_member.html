@@ -7,7 +7,8 @@
   <meta name="description" content="Project Member Dashboard – overview of assigned tasks, project progress, and personal performance." />
   <link rel="stylesheet" href="css/dashbord.css" />
   <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" defer></script>
+  <script src="js/nav.js" defer></script>
   <script src="js/dashbord.js" defer></script>
 </head>
 <body>
@@ -30,27 +31,38 @@
       </a>
 
       <a href="project.html" class="nav-item" id="nav-projects">
-        <span class="nav-icon">📁</span> My Projects
+        <span class="nav-icon">📁</span> Projects
+        <span class="nav-badge" id="badge-projects">4</span>
       </a>
 
       <a href="task.html" class="nav-item" id="nav-tasks">
-        <span class="nav-icon">✅</span> My Tasks
-        <span class="nav-badge" id="badge-tasks">5</span>
+        <span class="nav-icon">✅</span> Tasks
+        <span class="nav-badge" id="badge-tasks">12</span>
       </a>
 
       <a href="team.html" class="nav-item" id="nav-team">
-        <span class="nav-icon">👥</span> Team Board
+        <span class="nav-icon">👥</span> Team
       </a>
 
       <a href="files.html" class="nav-item" id="nav-files">
-        <span class="nav-icon">📎</span> Shared Files
+        <span class="nav-icon">📎</span> Files
+      </a>
+
+      <span class="nav-section-label" style="margin-top:12px;">Analytics</span>
+
+      <a href="#" class="nav-item" id="nav-worklogs">
+        <span class="nav-icon">📊</span> Work Logs
+      </a>
+
+      <a href="#" class="nav-item" id="nav-performance">
+        <span class="nav-icon">📈</span> Performance
       </a>
 
       <span class="nav-section-label" style="margin-top:12px;">Account</span>
 
       <a href="notification.html" class="nav-item" id="nav-notifications">
         <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge" id="badge-notif">2</span>
+        <span class="nav-badge" id="badge-notif">3</span>
       </a>
 
       <a href="profile.html" class="nav-item" id="nav-profile">
@@ -61,10 +73,10 @@
     <!-- Sidebar user footer -->
     <div class="sidebar-footer">
       <a href="profile.html" class="sidebar-user" title="View profile">
-        <div class="sidebar-user-avatar" id="sidebarAvatar">U</div>
+        <div class="sidebar-user-avatar" id="sidebarAvatar">M</div>
         <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebarName">Member</div>
-          <div class="sidebar-user-role">Project Member</div>
+          <div class="sidebar-user-name" id="sidebarName">Manager</div>
+          <div class="sidebar-user-role">Project Manager</div>
         </div>
         <span style="color:var(--text-muted);font-size:14px;">⚙️</span>
       </a>
