@@ -326,7 +326,7 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-card);
-  padding: 24px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   transition: box-shadow var(--transition);

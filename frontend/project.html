@@ -6,6 +6,7 @@
   <title>Projects – ProManage</title>
   <meta name="description" content="Projects management page for ProManage with project overview and tracking." />
   <link rel="stylesheet" href="css/dashbord.css" />
+  <link rel="stylesheet" href="css/project.css" />
   <script src="js/nav.js" defer></script>
   <script src="js/projects.js" defer></script>
 </head>
@@ -27,7 +28,7 @@
 
       <a href="project.html" class="nav-item active" id="nav-projects">
         <span class="nav-icon">📁</span> Projects
-        <span class="nav-badge" id="badge-projects">4</span>
+        <span class="nav-badge" id="badge-projects">0</span>
       </a>
 
       <a href="task.html" class="nav-item" id="nav-tasks">
@@ -88,15 +89,142 @@
         <input type="text" id="searchInput" placeholder="Search projects…" />
       </div>
 
-      <button class="btn-primary" type="button">
+      <button class="btn-primary" id="openModalBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Project
       </button>
     </header>
 
     <main class="main-content" id="mainContent">
-      <p style="color: var(--text-secondary);">Projects page content coming soon...</p>
+
+      <section class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Total Projects</span>
+          <span class="stat-value" id="statTotal">0</span>
+        </div>
+        <div class="stat-card stat-active">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" id="statActive">0</span>
+        </div>
+        <div class="stat-card stat-planning">
+          <span class="stat-label">Planning</span>
+          <span class="stat-value" id="statPlanning">0</span>
+        </div>
+        <div class="stat-card stat-completed">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value" id="statCompleted">0</span>
+        </div>
+      </section>
+
+      <section class="filters-bar">
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="filterStatus">
+            <option value="all">All Statuses</option>
+            <option value="planning">Planning</option>
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Priority</label>
+          <select id="filterPriority">
+            <option value="all">All Priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Sort by</label>
+          <select id="sortBy">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="deadline">Nearest Deadline</option>
+            <option value="progress">Progress</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewList" title="List view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+          <button class="view-btn" id="viewGrid" title="Grid view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="dash-card project-card">
+        <div class="project-container" id="projectContainer">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            </div>
+            <p class="empty-title">No projects yet</p>
+            <p class="empty-sub">Click <strong>New Project</strong> to get started</p>
+          </div>
+          <div class="project-list" id="projectList"></div>
+        </div>
+      </section>
+
     </main>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">New Project</h2>
+        <button class="modal-close" id="closeModalBtn" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editProjectId" />
+        <div class="form-group">
+          <label for="projectName">Project Name <span class="required">*</span></label>
+          <input type="text" id="projectName" placeholder="Enter project name…" required />
+        </div>
+        <div class="form-group">
+          <label for="projectDesc">Description</label>
+          <textarea id="projectDesc" rows="3" placeholder="Add a project description…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="projectStatus">Status</label>
+            <select id="projectStatus" required>
+              <option value="planning">Planning</option>
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="projectPriority">Priority</label>
+            <select id="projectPriority" required>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="projectDeadline">Deadline</label>
+            <input type="date" id="projectDeadline" />
+          </div>
+          <div class="form-group">
+            <label for="projectAssignee">Lead Member</label>
+            <input type="text" id="projectAssignee" placeholder="Assign project lead…" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="cancelBtn" type="button">Cancel</button>
+          <button class="btn-primary" id="saveProjectBtn" type="button">Save Project</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   </div>
 

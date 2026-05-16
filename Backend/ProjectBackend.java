@@ -19,7 +19,7 @@ class User {
 }
 
 // Project class
-public class Project {
+public class Project{
 
     private String projectName;
     private int projectId;
