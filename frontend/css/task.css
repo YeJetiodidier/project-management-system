@@ -706,9 +706,66 @@ body {
   gap: 1rem;
 }
 
+/* ===== GRID VIEW ===== */
+.task-list.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.task-card.grid-view {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.task-card.grid-view .task-check {
+  align-self: flex-start;
+}
+
+.task-card.grid-view .task-main {
+  width: 100%;
+}
+
+.task-card.grid-view .task-title {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.task-card.grid-view .task-description {
+  font-size: 0.85rem;
+}
+
+.task-card.grid-view .task-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.task-card.grid-view .task-assignee {
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.task-card.grid-view .task-due {
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.task-card.grid-view .task-actions {
+  width: 100%;
+  justify-content: flex-start;
+  opacity: 1;
+}
+
 @media (max-width: 1024px) {
   .filters-bar { flex-wrap: wrap; }
   .form-row { grid-template-columns: 1fr; }
+  .task-list.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -716,4 +773,7 @@ body {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .search-box input { width: 180px; }
   .top-header { gap: 0.85rem; }
+  .task-list.grid-view {
+    grid-template-columns: 1fr;
+  }
 }

@@ -8,6 +8,10 @@ const saveTaskBtn = document.getElementById('saveTaskBtn');
 const taskList = document.getElementById('taskList');
 const emptyState = document.getElementById('emptyState');
 const badgeTasks = document.getElementById('badge-tasks');
+const viewGrid = document.getElementById('viewGrid');
+const viewList = document.getElementById('viewList');
+
+let currentView = 'list';
 
 // Initialize tasks from local storage
 function initializeTasks() {
@@ -88,8 +92,9 @@ function renderTasks() {
   }
   
   emptyState.style.display = 'none';
+  taskList.className = 'task-list' + (currentView === 'grid' ? ' grid-view' : '');
   taskList.innerHTML = tasks.map(task => `
-    <div class="task-card status-${task.status}">
+    <div class="task-card status-${task.status} ${currentView === 'grid' ? 'grid-view' : ''}">
       <div class="task-check">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"></polyline>
@@ -195,3 +200,22 @@ document.addEventListener('DOMContentLoaded', () => {
   updateBadge(initializeTasks().length);
   updateStats();
 });
+
+// View toggle
+if (viewGrid) {
+  viewGrid.addEventListener('click', () => {
+    currentView = 'grid';
+    viewGrid.classList.add('active');
+    viewList.classList.remove('active');
+    renderTasks();
+  });
+}
+
+if (viewList) {
+  viewList.addEventListener('click', () => {
+    currentView = 'list';
+    viewList.classList.add('active');
+    viewGrid.classList.remove('active');
+    renderTasks();
+  });
+}
