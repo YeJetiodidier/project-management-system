@@ -32,12 +32,12 @@
 
       <a href="project.html" class="nav-item" id="nav-projects">
         <span class="nav-icon">📁</span> Projects
-        <span class="nav-badge" id="badge-projects">4</span>
+        <span class="nav-badge" id="badge-projects">0</span>
       </a>
 
       <a href="task.html" class="nav-item" id="nav-tasks">
         <span class="nav-icon">✅</span> Tasks
-        <span class="nav-badge" id="badge-tasks">12</span>
+        <span class="nav-badge" id="badge-tasks">0</span>
       </a>
 
       <a href="team.html" class="nav-item" id="nav-team">
@@ -62,7 +62,7 @@
 
       <a href="notification.html" class="nav-item" id="nav-notifications">
         <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge" id="badge-notif">3</span>
+        <span class="nav-badge" id="badge-notif">0</span>
       </a>
 
       <a href="profile.html" class="nav-item" id="nav-profile">
@@ -118,7 +118,7 @@
         <div class="stat-card">
           <div class="stat-icon blue">📋</div>
           <div class="stat-info">
-            <div class="stat-value" id="statTasks">12</div>
+            <div class="stat-value" id="statTasks">0</div>
             <div class="stat-label">Assigned Tasks</div>
           </div>
         </div>
@@ -126,16 +126,15 @@
         <div class="stat-card">
           <div class="stat-icon green">✅</div>
           <div class="stat-info">
-            <div class="stat-value" id="statCompleted">8</div>
+            <div class="stat-value" id="statCompleted">0</div>
             <div class="stat-label">Tasks Completed</div>
           </div>
-          <span class="stat-delta up">+2 This Week</span>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon orange">⏳</div>
           <div class="stat-info">
-            <div class="stat-value" id="statPending">4</div>
+            <div class="stat-value" id="statPending">0</div>
             <div class="stat-label">Pending / In Progress</div>
           </div>
         </div>
@@ -143,10 +142,9 @@
         <div class="stat-card">
           <div class="stat-icon cyan">🕒</div>
           <div class="stat-info">
-            <div class="stat-value" id="statHours">24h</div>
+            <div class="stat-value" id="statHours">0h</div>
             <div class="stat-label">Hours Logged</div>
           </div>
-          <span class="stat-delta up">Tracked</span>
         </div>
 
       </div>
@@ -161,40 +159,10 @@
             <span class="card-badge">View All ▾</span>
           </div>
           <div class="project-list" id="memberTaskList">
-
-            <a href="task.html" class="project-row">
-              <span class="project-color" style="background:#ef4444;"></span>
-              <div class="project-info">
-                <div class="project-name">Design Login UI</div>
-                <div class="project-sub">Project: Mobile App · Due Tomorrow</div>
-              </div>
-              <div class="project-progress-wrap">
-                <span class="progress-pct" style="color:var(--text-primary); background: rgba(239,68,68,0.2); padding:2px 8px; border-radius:12px;">High</span>
-              </div>
-            </a>
-
-            <a href="task.html" class="project-row">
-              <span class="project-color" style="background:#f59e0b;"></span>
-              <div class="project-info">
-                <div class="project-name">API Integration</div>
-                <div class="project-sub">Project: Backend API v2 · Due in 3 days</div>
-              </div>
-              <div class="project-progress-wrap">
-                <span class="progress-pct" style="color:var(--text-primary); background: rgba(245,158,11,0.2); padding:2px 8px; border-radius:12px;">Medium</span>
-              </div>
-            </a>
-
-            <a href="task.html" class="project-row">
-              <span class="project-color" style="background:#10b981;"></span>
-              <div class="project-info">
-                <div class="project-name">Write Unit Tests</div>
-                <div class="project-sub">Project: Backend API v2 · Due in 5 days</div>
-              </div>
-              <div class="project-progress-wrap">
-                <span class="progress-pct" style="color:var(--text-primary); background: rgba(16,185,129,0.2); padding:2px 8px; border-radius:12px;">Low</span>
-              </div>
-            </a>
-
+            <div class="empty-state" id="memberTaskListEmpty">
+              <p class="empty-title">No tasks assigned</p>
+              <p class="empty-sub">Your manager hasn't assigned any tasks to you yet.</p>
+            </div>
           </div>
         </div>
 
@@ -235,32 +203,11 @@
             <span class="card-title">Projects I'm In</span>
             <span class="card-badge">Active ▾</span>
           </div>
-          <div class="project-list">
-            
-            <a href="project.html" class="project-row">
-              <span class="project-color" style="background:#6d63f5;"></span>
-              <div class="project-info">
-                <div class="project-name">Mobile App Redesign</div>
-                <div class="project-sub">Manager: Alice · ID: P-1024</div>
-              </div>
-              <div class="project-progress-wrap">
-                <div class="progress-bar-mini"><div class="progress-fill" style="width:72%"></div></div>
-                <span class="progress-pct">72%</span>
-              </div>
-            </a>
-
-            <a href="project.html" class="project-row">
-              <span class="project-color" style="background:#06b6d4;"></span>
-              <div class="project-info">
-                <div class="project-name">Backend API v2</div>
-                <div class="project-sub">Manager: Bob · ID: P-8831</div>
-              </div>
-              <div class="project-progress-wrap">
-                <div class="progress-bar-mini"><div class="progress-fill" style="width:45%; background: var(--accent);"></div></div>
-                <span class="progress-pct">45%</span>
-              </div>
-            </a>
-
+          <div class="project-list" id="memberProjectList">
+            <div class="empty-state" id="memberProjectListEmpty">
+              <p class="empty-title">No projects yet</p>
+              <p class="empty-sub">You haven't been added to any project.</p>
+            </div>
           </div>
         </div>
 

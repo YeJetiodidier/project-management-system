@@ -7,6 +7,8 @@
   <meta name="description" content="Projects management page for ProManage with project overview and tracking." />
   <link rel="stylesheet" href="css/dashbord.css" />
   <link rel="stylesheet" href="css/project.css" />
+  <script src="js/api.js" defer></script>
+  <script src="js/role_guard.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/projects.js" defer></script>
 </head>
@@ -33,7 +35,7 @@
 
       <a href="task.html" class="nav-item" id="nav-tasks">
         <span class="nav-icon">✅</span> Tasks
-        <span class="nav-badge" id="badge-tasks">12</span>
+        <span class="nav-badge" id="badge-tasks">0</span>
       </a>
 
       <a href="team.html" class="nav-item" id="nav-team">
@@ -58,7 +60,7 @@
 
       <a href="notification.html" class="nav-item" id="nav-notifications">
         <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge" id="badge-notif">3</span>
+        <span class="nav-badge" id="badge-notif">0</span>
       </a>
 
       <a href="profile.html" class="nav-item" id="nav-profile">
@@ -89,8 +91,8 @@
         <input type="text" id="searchInput" placeholder="Search projects…" />
       </div>
 
-      <button class="btn-primary" id="openModalBtn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <button class="btn-primary" id="openModalBtn" type="button" data-requires="manager">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y1="12"/></svg>
         New Project
       </button>
     </header>
@@ -212,6 +214,12 @@
           <div class="form-group">
             <label for="projectDeadline">Deadline</label>
             <input type="date" id="projectDeadline" />
+          </div>
+          <div class="form-group">
+            <label for="projectAssignee">Assign To</label>
+            <select id="projectAssignee">
+              <option value="">— Unassigned —</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">

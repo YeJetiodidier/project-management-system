@@ -1,69 +1,114 @@
-
-import java.io.*;
 import java.util.*;
 
 /**
- * 
+ * Project class representing a project in the project management system
  */
 public class Project {
+    private String id;
+    private String name;
+    private String description;
+    private String status;
+    private String priority;
+    private String dateline;
+    private String assignee;
+    private String createdAt;
+    private float progress;
+    private List<String> teamMembers;
 
-    /**
-     * Default constructor
-     */
     public Project() {
+        this.id = generateId();
+        this.createdAt = new Date().toInstant().toString();
+        this.teamMembers = new ArrayList<>();
+        this.progress = 0.0f;
     }
 
+    public Project(String name) {
+        this.name = name;
+        this.id = generateId();
+        this.createdAt = new Date().toInstant().toString();
+        this.progress = 0.0f;
+        this.teamMembers = new ArrayList<>();
+    }
+
+    public Project(String name, String description, String status, String priority, String dateline) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.dateline = dateline;
+        this.id = generateId();
+        this.createdAt = new Date().toInstant().toString();
+        this.progress = 0.0f;
+        this.teamMembers = new ArrayList<>();
+    }
+
+    public float calculateProgress() { 
+        return this.progress; 
+    }
+    
     /**
-     * 
-     */
-    public string name;
-
-    /**
-     * 
-     */
-    public string id;
-
-    /**
-     * 
-     */
-    public string description;
-
-    /**
-     * 
-     */
-    public int dateline;
-
-    /**
-     * 
-     */
-    public string status;
-
-
-
-
-
-    /**
-     * @return
+     * Alias for calculation to match UML
      */
     public float calculateprogress() {
-        // TODO implement here
-        return 0.0f;
+        return calculateProgress();
     }
 
+    public void assignUser(String userId) {
+        if (!this.teamMembers.contains(userId)) {
+            this.teamMembers.add(userId);
+        }
+    }
+    
     /**
-     * @return
+     * Alias for user assignment to match UML
      */
-    public string assigfnuser() {
-        // TODO implement here
+    public String assigfnuser() {
+        if (!this.teamMembers.isEmpty()) {
+            return "User assigned";
+        }
         return null;
     }
 
-    /**
-     * @return
-     */
-    public string createproject() {
-        // TODO implement here
-        return null;
+    public void removeUser(String userId) { 
+        this.teamMembers.remove(userId); 
+    }
+    
+    public void updateStatus(String newStatus) { 
+        this.status = newStatus; 
+    }
+    
+    public void updateProgress(float newProgress) {
+        if (newProgress >= 0 && newProgress <= 100) {
+            this.progress = newProgress;
+        }
+    }
+    
+    public String createproject() {
+        return "Project created with ID: " + this.id;
     }
 
+    private String generateId() { 
+        return UUID.randomUUID().toString(); 
+    }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
+    public String getDateline() { return dateline; }
+    public void setDateline(String dateline) { this.dateline = dateline; }
+    public String getAssignee() { return assignee; }
+    public void setAssignee(String assignee) { this.assignee = assignee; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public float getProgress() { return progress; }
+    public void setProgress(float progress) { this.progress = progress; }
+    public List<String> getTeamMembers() { return teamMembers; }
+    public void setTeamMembers(List<String> teamMembers) { this.teamMembers = teamMembers; }
 }

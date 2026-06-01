@@ -1,0 +1,310 @@
+/* =======================================
+   FILES.CSS – Files Management Page
+   Project Management System
+   ======================================= */
+
+:root {
+  --bg-deep:       #0b0917;
+  --bg-card:       rgba(255,255,255,0.04);
+  --bg-input:      rgba(255,255,255,0.04);
+  --bg-modal:      #10121a;
+  --border:        rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.18);
+  --text-primary:  #eef2ff;
+  --text-secondary:#a5b4fc;
+  --text-muted:    #94a3b8;
+  --accent:        #6d63f5;
+  --accent-hover:  #7b6fff;
+  --accent-glow:   rgba(109,99,245,0.24);
+  --accent-soft:   rgba(109,99,245,0.16);
+  --cyan:          #06b6d4;
+  --success:       #10b981;
+  --warning:       #f59e0b;
+  --danger:        #ef4444;
+  --radius-sm:     10px;
+  --radius-md:     14px;
+  --radius-lg:     18px;
+  --transition:    0.22s ease;
+}
+
+/* ── File type colors ── */
+:root {
+  --type-pdf:    #ef4444;
+  --type-pdf-bg: rgba(239,68,68,0.14);
+  --type-doc:    #3b82f6;
+  --type-doc-bg: rgba(59,130,246,0.14);
+  --type-sheet:  #10b981;
+  --type-sheet-bg:rgba(16,185,129,0.14);
+  --type-img:    #a855f7;
+  --type-img-bg: rgba(168,85,247,0.14);
+  --type-zip:    #f59e0b;
+  --type-zip-bg: rgba(245,158,11,0.14);
+  --type-other:  #94a3b8;
+  --type-other-bg:rgba(148,163,184,0.14);
+}
+
+/* ── Container ── */
+.file-container {
+  position: relative;
+  min-height: 240px;
+}
+
+/* ── File List ── */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-list.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ── File Card (List) ── */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.file-item:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.file-icon {
+  font-size: 22px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.file-icon.type-pdf    { background: var(--type-pdf-bg);   color: var(--type-pdf); }
+.file-icon.type-docx   { background: var(--type-doc-bg);   color: var(--type-doc); }
+.file-icon.type-xlsx   { background: var(--type-sheet-bg); color: var(--type-sheet); }
+.file-icon.type-png,
+.file-icon.type-jpg,
+.file-icon.type-jpeg   { background: var(--type-img-bg);   color: var(--type-img); }
+.file-icon.type-zip    { background: var(--type-zip-bg);   color: var(--type-zip); }
+.file-icon.type-other  { background: var(--type-other-bg); color: var(--type-other); }
+
+.file-info { flex: 1; min-width: 0; }
+
+.file-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.file-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-type-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+}
+
+.file-type-badge.type-pdf   { background: var(--type-pdf-bg);   color: var(--type-pdf); }
+.file-type-badge.type-docx  { background: var(--type-doc-bg);   color: var(--type-doc); }
+.file-type-badge.type-xlsx  { background: var(--type-sheet-bg); color: var(--type-sheet); }
+.file-type-badge.type-png,
+.file-type-badge.type-jpg,
+.file-type-badge.type-jpeg  { background: var(--type-img-bg);   color: var(--type-img); }
+.file-type-badge.type-zip   { background: var(--type-zip-bg);   color: var(--type-zip); }
+.file-type-badge.type-other { background: var(--type-other-bg); color: var(--type-other); }
+
+.file-link {
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+
+.file-link:hover { color: #a5b4fc; text-decoration: underline; }
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Grid view card ── */
+.file-item.grid-view {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.file-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 110px;
+  background: linear-gradient(135deg, rgba(109,99,245,0.16), rgba(6,182,212,0.10));
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.file-grid-icon {
+  font-size: 38px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.file-grid-icon.type-pdf   { background: var(--type-pdf-bg);   color: var(--type-pdf); }
+.file-grid-icon.type-docx  { background: var(--type-doc-bg);   color: var(--type-doc); }
+.file-grid-icon.type-xlsx  { background: var(--type-sheet-bg); color: var(--type-sheet); }
+.file-grid-icon.type-png,
+.file-grid-icon.type-jpg,
+.file-grid-icon.type-jpeg  { background: var(--type-img-bg);   color: var(--type-img); }
+.file-grid-icon.type-zip   { background: var(--type-zip-bg);   color: var(--type-zip); }
+.file-grid-icon.type-other { background: var(--type-other-bg); color: var(--type-other); }
+
+.file-grid-type {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+.file-grid-body {
+  padding: 14px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-grid-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-grid-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.file-grid-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  justify-content: flex-end;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  gap: 0.5rem;
+}
+
+.empty-icon {
+  width: 66px;
+  height: 66px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.05);
+}
+
+.empty-icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+}
+
+.empty-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.empty-sub {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.empty-sub strong { color: var(--text-primary); font-weight: 600; }
+
+.hidden { display: none !important; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .file-list.grid-view { grid-template-columns: 1fr; }
+}

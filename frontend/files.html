@@ -6,7 +6,10 @@
   <title>Files – ProManage</title>
   <meta name="description" content="Files management page for ProManage with document sharing and collaboration." />
   <link rel="stylesheet" href="css/dashbord.css" />
+  <link rel="stylesheet" href="css/project.css" />
   <link rel="stylesheet" href="css/files.css" />
+  <script src="js/api.js" defer></script>
+  <script src="js/role_guard.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/files.js" defer></script>
 </head>
@@ -28,12 +31,12 @@
 
       <a href="project.html" class="nav-item" id="nav-projects">
         <span class="nav-icon">📁</span> Projects
-        <span class="nav-badge" id="badge-projects">4</span>
+        <span class="nav-badge" id="badge-projects">0</span>
       </a>
 
       <a href="task.html" class="nav-item" id="nav-tasks">
         <span class="nav-icon">✅</span> Tasks
-        <span class="nav-badge" id="badge-tasks">12</span>
+        <span class="nav-badge" id="badge-tasks">0</span>
       </a>
 
       <a href="team.html" class="nav-item" id="nav-team">
@@ -58,7 +61,7 @@
 
       <a href="notification.html" class="nav-item" id="nav-notifications">
         <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge" id="badge-notif">3</span>
+        <span class="nav-badge" id="badge-notif">0</span>
       </a>
 
       <a href="profile.html" class="nav-item" id="nav-profile">
@@ -89,16 +92,132 @@
         <input type="text" id="searchInput" placeholder="Search files…" />
       </div>
 
-      <button class="btn-primary" type="button">
+      <button class="btn-primary" id="openFileModalBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Upload File
       </button>
     </header>
 
     <main class="main-content" id="mainContent">
-      <p style="color: var(--text-secondary);">Files page content coming soon...</p>
+
+      <section class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Total Files</span>
+          <span class="stat-value" id="statTotal">0</span>
+        </div>
+        <div class="stat-card stat-active">
+          <span class="stat-label">Documents</span>
+          <span class="stat-value" id="statDocs">0</span>
+        </div>
+        <div class="stat-card stat-planning">
+          <span class="stat-label">Images</span>
+          <span class="stat-value" id="statImages">0</span>
+        </div>
+        <div class="stat-card stat-completed">
+          <span class="stat-label">Linked to Projects</span>
+          <span class="stat-value" id="statLinked">0</span>
+        </div>
+      </section>
+
+      <section class="filters-bar">
+        <div class="filter-group">
+          <label>Type</label>
+          <select id="filterType">
+            <option value="all">All Types</option>
+            <option value="pdf">PDF</option>
+            <option value="docx">DOCX</option>
+            <option value="xlsx">XLSX</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+            <option value="zip">ZIP</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Project</label>
+          <select id="filterProject">
+            <option value="all">All Projects</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Sort by</label>
+          <select id="sortBy">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">Name (A → Z)</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewGrid" title="Grid view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="view-btn" id="viewList" title="List view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="dash-card">
+        <div class="file-container" id="fileContainer">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <p class="empty-title">No files yet</p>
+            <p class="empty-sub">Click <strong>Upload File</strong> to add your first file</p>
+          </div>
+          <div class="file-list" id="fileList"></div>
+        </div>
+      </section>
+
     </main>
 
+  </div>
+
+  <div class="modal-overlay" id="fileModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="fileModalTitle">Upload File</h2>
+        <button class="modal-close" id="closeFileModalBtn" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editFileId" />
+        <div class="form-group">
+          <label for="fileName">File Name <span class="required">*</span></label>
+          <input type="text" id="fileName" placeholder="e.g. wireframes_v3.pdf" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fileType">Type</label>
+            <select id="fileType">
+              <option value="pdf">PDF</option>
+              <option value="docx">DOCX</option>
+              <option value="xlsx">XLSX</option>
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+              <option value="zip">ZIP</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fileProject">Project</label>
+            <select id="fileProject">
+              <option value="">— None —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fileUrl">URL</label>
+          <input type="text" id="fileUrl" placeholder="https://…" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelFileBtn" type="button">Cancel</button>
+        <button class="btn-primary" id="saveFileBtn" type="button">Save</button>
+      </div>
+    </div>
   </div>
 
 </body>

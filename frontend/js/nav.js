@@ -1,33 +1,50 @@
-// Shared Navigation & Badge Initialization
-// This script runs on all pages to sync badges with localStorage
+(function () {
+  'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
-  initializeBadges();
-});
+  const originalFetch = window.fetch;
+  window.fetch = function (input, init) {
+    init = init || {};
+    const headers = new Headers(init.headers || {});
+    const token = sessionStorage.getItem('pms_token');
+    if (token) {
+      headers.set('Authorization', 'Bearer ' + token);
+    }
+    init.headers = headers;
+    return originalFetch(input, init);
+  };
 
-function initializeBadges() {
-  // Initialize task badge from localStorage
-  const tasksData = localStorage.getItem('promanage_tasks');
-  const tasks = tasksData ? JSON.parse(tasksData) : [];
-  
-  const badgeTask = document.getElementById('badge-tasks');
-  if (badgeTask) {
-    badgeTask.textContent = tasks.length;
+  async function refreshBadges() {
+    const token = sessionStorage.getItem('pms_token');
+    if (!token) return;
+
+    try {
+      const [projRes, taskRes, notifRes] = await Promise.all([
+        fetch('/api/projects'),
+        fetch('/api/tasks'),
+        fetch('/api/notifications?userId=' + encodeURIComponent(sessionStorage.getItem('pms_id') || sessionStorage.getItem('pms_userId') || ''))
+      ]);
+
+      if (projRes.ok) {
+        const projects = await projRes.json();
+        const badge = document.getElementById('badge-projects');
+        if (badge) badge.textContent = projects.length;
+      }
+      if (taskRes.ok) {
+        const tasks = await taskRes.json();
+        const badge = document.getElementById('badge-tasks');
+        if (badge) badge.textContent = tasks.length;
+      }
+      if (notifRes.ok) {
+        const notifs = await notifRes.json();
+        const unread = notifs.filter(function (n) { return !n.isread && !n.isRead; }).length;
+        const badge = document.getElementById('badge-notif');
+        if (badge) {
+          badge.textContent = unread;
+          badge.style.display = unread > 0 ? 'inline-block' : 'none';
+        }
+      }
+    } catch (e) { /* server might be offline */ }
   }
 
-  // You can add other badge initializations here for projects, notifications, etc.
-  // Example:
-  // const projectsData = localStorage.getItem('promanage_projects');
-  // const projects = projectsData ? JSON.parse(projectsData) : [];
-  // const badgeProjects = document.getElementById('badge-projects');
-  // if (badgeProjects) {
-  //   badgeProjects.textContent = projects.length;
-  // }
-}
-
-// Optional: Add storage event listener to sync badges when localStorage changes in other tabs
-window.addEventListener('storage', (event) => {
-  if (event.key === 'promanage_tasks') {
-    initializeBadges();
-  }
-});
+  document.addEventListener('DOMContentLoaded', refreshBadges);
+})();

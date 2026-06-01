@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProManage – Project Management System</title>
+  <meta name="description" content="ProManage – Project Management System" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <script>
+    (function () {
+      var role = sessionStorage.getItem('pms_role');
+      var token = sessionStorage.getItem('pms_token');
+      if (token && role === 'manager') {
+        window.location.href = 'dashbord_manager.html';
+      } else if (token && role === 'member') {
+        window.location.href = 'dashbord ui_member.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

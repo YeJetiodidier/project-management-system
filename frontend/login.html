@@ -59,19 +59,7 @@
 
       <div class="auth-header">
         <h1>Welcome back 👋</h1>
-        <p>Select your role and enter your credentials to sign in.</p>
-      </div>
-
-      <!-- ── Role Toggle ── -->
-      <div class="role-toggle" role="group" aria-label="Select login role">
-        <input type="radio" id="role-manager" name="role" value="manager" checked />
-        <label for="role-manager">
-          <span>👔</span> Project Manager
-        </label>
-        <input type="radio" id="role-member" name="role" value="member" />
-        <label for="role-member">
-          <span>👤</span> Project Member
-        </label>
+        <p>Enter your email and password to sign in.</p>
       </div>
 
       <!-- ── Login Form ── -->
@@ -93,28 +81,20 @@
           </div>
         </div>
 
-        <!-- Second credential – switches between Username (manager) and User ID (member) -->
+        <!-- Password -->
         <div class="form-group">
-          <label class="field-label" id="credLabel" for="credInput">Username</label>
+          <label class="field-label" for="password">Password</label>
           <div class="input-wrap">
-            <span class="input-icon" id="credIcon">👤</span>
+            <span class="input-icon">🔒</span>
             <input
-              type="text"
-              id="credInput"
-              name="username"
-              placeholder="Enter your username"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
               required
-              autocomplete="off"
-              data-manager-label="Username"
-              data-manager-placeholder="Enter your username"
-              data-manager-icon="👤"
-              data-manager-name="username"
-              data-member-label="User ID"
-              data-member-placeholder="Enter your User ID"
-              data-member-icon="🆔"
-              data-member-name="userId"
+              autocomplete="current-password"
             />
-            <button type="button" class="toggle-pw" id="toggleCred" aria-label="Toggle credential visibility">
+            <button type="button" class="toggle-pw" id="togglePassword" aria-label="Toggle password visibility">
               👁️
             </button>
           </div>

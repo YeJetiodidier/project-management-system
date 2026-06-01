@@ -6,6 +6,10 @@
   <title>Team – ProManage</title>
   <meta name="description" content="Team management page for ProManage with team members and collaboration." />
   <link rel="stylesheet" href="css/dashbord.css" />
+  <link rel="stylesheet" href="css/project.css" />
+  <link rel="stylesheet" href="css/team.css" />
+  <script src="js/api.js" defer></script>
+  <script src="js/role_guard.js" defer></script>
   <script src="js/nav.js" defer></script>
   <script src="js/team.js" defer></script>
 </head>
@@ -27,12 +31,12 @@
 
       <a href="project.html" class="nav-item" id="nav-projects">
         <span class="nav-icon">📁</span> Projects
-        <span class="nav-badge" id="badge-projects">4</span>
+        <span class="nav-badge" id="badge-projects">0</span>
       </a>
 
       <a href="task.html" class="nav-item" id="nav-tasks">
         <span class="nav-icon">✅</span> Tasks
-        <span class="nav-badge" id="badge-tasks">12</span>
+        <span class="nav-badge" id="badge-tasks">0</span>
       </a>
 
       <a href="team.html" class="nav-item active" id="nav-team">
@@ -57,7 +61,7 @@
 
       <a href="notification.html" class="nav-item" id="nav-notifications">
         <span class="nav-icon">🔔</span> Notifications
-        <span class="nav-badge" id="badge-notif">3</span>
+        <span class="nav-badge" id="badge-notif">0</span>
       </a>
 
       <a href="profile.html" class="nav-item" id="nav-profile">
@@ -85,19 +89,104 @@
 
       <div class="topbar-search">
         <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Search team members…" />
+        <input type="text" id="searchInput" placeholder="Search teams or members…" />
       </div>
 
-      <button class="btn-primary" type="button">
+      <button class="btn-primary" id="openTeamModalBtn" type="button" data-requires="manager">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Member
+        Add Team
       </button>
     </header>
 
     <main class="main-content" id="mainContent">
-      <p style="color: var(--text-secondary);">Team page content coming soon...</p>
+
+      <section class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Total Teams</span>
+          <span class="stat-value" id="statTeams">0</span>
+        </div>
+        <div class="stat-card stat-active">
+          <span class="stat-label">Total Members</span>
+          <span class="stat-value" id="statMembers">0</span>
+        </div>
+        <div class="stat-card stat-planning">
+          <span class="stat-label">Team Leaders</span>
+          <span class="stat-value" id="statLeaders">0</span>
+        </div>
+        <div class="stat-card stat-completed">
+          <span class="stat-label">Avg. Team Size</span>
+          <span class="stat-value" id="statAvg">0</span>
+        </div>
+      </section>
+
+      <section class="filters-bar">
+        <div class="filter-group">
+          <label>Sort by</label>
+          <select id="sortBy">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">Name (A → Z)</option>
+            <option value="size">Team Size</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewGrid" title="Grid view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button class="view-btn" id="viewList" title="List view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="dash-card">
+        <div class="team-container" id="teamContainer">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <p class="empty-title">No teams yet</p>
+            <p class="empty-sub">Click <strong>Add Team</strong> to create your first team</p>
+          </div>
+          <div class="team-list" id="teamList"></div>
+        </div>
+      </section>
+
     </main>
 
+  </div>
+
+  <div class="modal-overlay" id="teamModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="teamModalTitle">New Team</h2>
+        <button class="modal-close" id="closeTeamModalBtn" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editTeamId" />
+        <div class="form-group">
+          <label for="teamName">Team Name <span class="required">*</span></label>
+          <input type="text" id="teamName" placeholder="Enter team name…" />
+        </div>
+        <div class="form-group">
+          <label for="teamLeader">Team Leader</label>
+          <select id="teamLeader">
+            <option value="">— None —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="teamMembers">Members</label>
+          <select id="teamMembers" multiple size="6" style="height:auto;min-height:140px;"></select>
+          <small style="color:var(--text-muted);font-size:0.78rem;display:block;margin-top:6px;">Hold Ctrl/Cmd to select multiple.</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelTeamBtn" type="button">Cancel</button>
+        <button class="btn-primary" id="saveTeamBtn" type="button">Save Team</button>
+      </div>
+    </div>
   </div>
 
 </body>

@@ -1,5 +1,4 @@
 // Task Management System
-const TASKS_STORAGE_KEY = 'promanage_tasks';
 const openModalBtn = document.getElementById('openModalBtn');
 const modalOverlay = document.getElementById('modalOverlay');
 const closeModalBtn = document.getElementById('closeModalBtn');
@@ -10,212 +9,288 @@ const emptyState = document.getElementById('emptyState');
 const badgeTasks = document.getElementById('badge-tasks');
 const viewGrid = document.getElementById('viewGrid');
 const viewList = document.getElementById('viewList');
+const searchInput = document.getElementById('searchInput');
+const filterStatus = document.getElementById('filterStatus');
+const filterPriority = document.getElementById('filterPriority');
+const sortBy = document.getElementById('sortBy');
 
 let currentView = 'list';
+let tasksData = [];
+let usersData = [];
+let projectsData = [];
 
-// Initialize tasks from local storage
-function initializeTasks() {
-  const stored = localStorage.getItem(TASKS_STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+function escapeHtml(t) {
+  const d = document.createElement('div');
+  d.textContent = t == null ? '' : String(t);
+  return d.innerHTML;
 }
 
-// Update badge with task count
+async function fetchTasks() {
+  try {
+    const r = await fetch('/api/tasks');
+    if (r.ok) {
+      tasksData = await r.json();
+      updateBadge(tasksData.length);
+      updateStats();
+      renderTasks();
+    }
+  } catch (err) { console.error('Failed to fetch tasks', err); }
+}
+async function fetchUsers() {
+  try {
+    const r = await fetch('/api/users');
+    if (r.ok) usersData = await r.json();
+  } catch (e) { /* ignore */ }
+}
+async function fetchProjects() {
+  try {
+    const r = await fetch('/api/projects');
+    if (r.ok) projectsData = await r.json();
+  } catch (e) { /* ignore */ }
+}
+
 function updateBadge(count) {
-  if (badgeTasks) {
-    badgeTasks.textContent = count;
-  }
+  if (badgeTasks) badgeTasks.textContent = count;
 }
 
-// Update stats
 function updateStats() {
-  const tasks = initializeTasks();
   const statTotal = document.getElementById('statTotal');
   const statTodo = document.getElementById('statTodo');
   const statProgress = document.getElementById('statProgress');
   const statDone = document.getElementById('statDone');
-
-  if (statTotal) statTotal.textContent = tasks.length;
-  if (statTodo) statTodo.textContent = tasks.filter(t => t.status === 'todo').length;
-  if (statProgress) statProgress.textContent = tasks.filter(t => t.status === 'inprogress').length;
-  if (statDone) statDone.textContent = tasks.filter(t => t.status === 'done').length;
+  if (statTotal) statTotal.textContent = tasksData.length;
+  if (statTodo) statTodo.textContent = tasksData.filter(t => t.status === 'todo').length;
+  if (statProgress) statProgress.textContent = tasksData.filter(t => t.status === 'inprogress').length;
+  if (statDone) statDone.textContent = tasksData.filter(t => t.status === 'done').length;
 }
 
-// Save tasks to local storage
-function saveTasks(tasks) {
-  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-  updateBadge(tasks.length);
-  updateStats();
+function userLabel(id) {
+  if (!id) return '';
+  const u = usersData.find(u => u.id === id);
+  return u ? Auth.userLabel(u) : id;
+}
+function projectLabel(id) {
+  if (!id) return '';
+  const p = projectsData.find(p => p.id === id);
+  return p ? p.name : id;
 }
 
-// Add task
-function addTask(task) {
-  const tasks = initializeTasks();
-  task.id = Date.now().toString();
-  tasks.push(task);
-  saveTasks(tasks);
-  renderTasks();
+async function addTask(task) {
+  await fetch('/api/tasks', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task)
+  });
+  fetchTasks();
+}
+async function updateTaskReq(task) {
+  await fetch('/api/tasks', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task)
+  });
+  fetchTasks();
+}
+async function deleteTask(taskId) {
+  if (!confirm('Delete this task?')) return;
+  await fetch('/api/tasks?id=' + encodeURIComponent(taskId), { method: 'DELETE' });
+  fetchTasks();
 }
 
-// Delete task
-function deleteTask(taskId) {
-  let tasks = initializeTasks();
-  tasks = tasks.filter(t => t.id !== taskId);
-  saveTasks(tasks);
-  renderTasks();
-}
-
-// Edit task (load into modal)
 function editTask(taskId) {
-  const tasks = initializeTasks();
-  const task = tasks.find(t => t.id === taskId);
+  const task = tasksData.find(t => t.id === taskId);
   if (!task) return;
-
   document.getElementById('editTaskId').value = taskId;
-  document.getElementById('taskTitle').value = task.title;
+  document.getElementById('taskTitle').value = task.title || '';
   document.getElementById('taskDesc').value = task.description || '';
-  document.getElementById('taskStatus').value = task.status;
-  document.getElementById('taskPriority').value = task.priority;
+  document.getElementById('taskStatus').value = task.status || 'todo';
+  document.getElementById('taskPriority').value = task.priority || 'medium';
   document.getElementById('taskDue').value = task.dueDate || '';
-  document.getElementById('taskAssignee').value = task.assignee || '';
+  populateAssigneeSelect(task.assignee);
+  populateProjectSelect(task.projectId);
   document.getElementById('modalTitle').textContent = 'Edit Task';
   toggleModal(true);
 }
 
-// Render tasks to DOM
+function populateAssigneeSelect(selectedId) {
+  const sel = document.getElementById('taskAssignee');
+  if (!sel) return;
+  // Sort members first (they are the ones tasks are typically assigned to),
+  // then managers, then everyone else – alphabetical by display name within each group.
+  const ordered = usersData.slice().sort(function (a, b) {
+    const ra = (a.role === 'member') ? 0 : (a.role === 'manager') ? 1 : 2;
+    const rb = (b.role === 'member') ? 0 : (b.role === 'manager') ? 1 : 2;
+    if (ra !== rb) return ra - rb;
+    const na = (a.name || a.username || a.email || '').toLowerCase();
+    const nb = (b.name || b.username || b.email || '').toLowerCase();
+    return na.localeCompare(nb);
+  });
+  const opts = ['<option value="">— Unassigned —</option>']
+    .concat(ordered.map(u => {
+      const label = Auth.userLabel(u);
+      const selAttr = u.id === selectedId ? ' selected' : '';
+      return `<option value="${escapeHtml(u.id)}"${selAttr}>${escapeHtml(label)}</option>`;
+    }));
+  sel.innerHTML = opts.join('');
+}
+function populateProjectSelect(selectedId) {
+  const sel = document.getElementById('taskProject');
+  if (!sel) return;
+  const opts = ['<option value="">— None —</option>']
+    .concat(projectsData.map(p => {
+      const selAttr = p.id === selectedId ? ' selected' : '';
+      return `<option value="${escapeHtml(p.id)}"${selAttr}>${escapeHtml(p.name)}</option>`;
+    }));
+  sel.innerHTML = opts.join('');
+}
+
+function statusLabel(s) {
+  if (s === 'inprogress') return 'In Progress';
+  if (!s) return '—';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function getFilteredTasks() {
+  let tasks = tasksData;
+  const search = (searchInput?.value || '').toLowerCase();
+  const statusF = filterStatus?.value || 'all';
+  const priorityF = filterPriority?.value || 'all';
+  const sortType = sortBy?.value || 'newest';
+
+  if (search) {
+    tasks = tasks.filter(t =>
+      (t.title || '').toLowerCase().includes(search) ||
+      (t.description && t.description.toLowerCase().includes(search))
+    );
+  }
+  if (statusF !== 'all') tasks = tasks.filter(t => t.status === statusF);
+  if (priorityF !== 'all') tasks = tasks.filter(t => t.priority === priorityF);
+
+  tasks = tasks.slice();
+  switch (sortType) {
+    case 'newest':   tasks.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)); break;
+    case 'oldest':   tasks.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0)); break;
+    case 'duedate':  tasks.sort((a, b) => new Date(a.dueDate || '9999') - new Date(b.dueDate || '9999')); break;
+    case 'priority': tasks.sort((a, b) => {
+      const rank = { high: 0, medium: 1, low: 2 };
+      return (rank[a.priority] ?? 3) - (rank[b.priority] ?? 3);
+    }); break;
+  }
+  return tasks;
+}
+
 function renderTasks() {
-  const tasks = initializeTasks();
-  
+  const tasks = getFilteredTasks();
   if (tasks.length === 0) {
-    emptyState.style.display = 'flex';
-    taskList.innerHTML = '';
+    if (emptyState) emptyState.style.display = 'flex';
+    if (taskList) taskList.innerHTML = '';
     return;
   }
-  
-  emptyState.style.display = 'none';
-  taskList.className = 'task-list' + (currentView === 'grid' ? ' grid-view' : '');
-  taskList.innerHTML = tasks.map(task => `
-    <div class="task-card status-${task.status} ${currentView === 'grid' ? 'grid-view' : ''}">
-      <div class="task-check">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
+  if (emptyState) emptyState.style.display = 'none';
+  if (taskList) {
+    taskList.className = 'task-list' + (currentView === 'grid' ? ' grid-view' : '');
+    const canManage = Auth.isManager();
+    taskList.innerHTML = tasks.map(task => `
+      <div class="task-card status-${escapeHtml(task.status || 'todo')} ${currentView === 'grid' ? 'grid-view' : ''}">
+        <div class="task-main">
+          <div class="task-title">${escapeHtml(task.title)}</div>
+          ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
+          ${task.projectId ? `<div class="task-project" style="color:var(--text-muted);font-size:12px;margin-top:4px;">📁 ${escapeHtml(projectLabel(task.projectId))}</div>` : ''}
+        </div>
+        <div class="task-badges">
+          <span class="badge badge-${escapeHtml(task.status || 'todo')}">${escapeHtml(statusLabel(task.status))}</span>
+          <span class="badge badge-${escapeHtml(task.priority || 'medium')}">${escapeHtml((task.priority || 'medium').charAt(0).toUpperCase() + (task.priority || 'medium').slice(1))}</span>
+        </div>
+        ${task.assignee ? `<div class="task-assignee"><span class="assignee-avatar">${escapeHtml(userLabel(task.assignee).charAt(0).toUpperCase())}</span> ${escapeHtml(userLabel(task.assignee))}</div>` : ''}
+        ${task.dueDate ? `<div class="task-due"><span>📅</span> ${escapeHtml(task.dueDate)}</div>` : ''}
+        ${canManage ? `
+        <div class="task-actions">
+          <button class="action-btn" data-edit-task="${escapeHtml(task.id)}" title="Edit">✏️</button>
+          <button class="action-btn delete" data-del-task="${escapeHtml(task.id)}" title="Delete">🗑️</button>
+        </div>` : ''}
       </div>
-      <div class="task-main">
-        <div class="task-title">${escapeHtml(task.title)}</div>
-        ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
-      </div>
-      <div class="task-badges">
-        <span class="badge badge-${task.status}">${task.status === 'inprogress' ? 'In Progress' : task.status.charAt(0).toUpperCase() + task.status.slice(1)}</span>
-        <span class="badge badge-${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
-      </div>
-      ${task.assignee ? `<div class="task-assignee"><span class="assignee-avatar">${task.assignee.charAt(0).toUpperCase()}</span> ${escapeHtml(task.assignee)}</div>` : ''}
-      ${task.dueDate ? `<div class="task-due"><span>📅</span> ${task.dueDate}</div>` : ''}
-      <div class="task-actions">
-        <button class="action-btn" onclick="editTask('${task.id}')" title="Edit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-        </button>
-        <button class="action-btn delete" onclick="if(confirm('Delete this task?')) deleteTask('${task.id}')" title="Delete">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-        </button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, m => map[m]);
-}
-
-// Modal toggle
-function toggleModal(show) {
-  if (modalOverlay) {
-    modalOverlay.classList.toggle('active', show);
+    `).join('');
   }
 }
 
-// Modal event listeners
-if (openModalBtn && modalOverlay && closeModalBtn && cancelBtn) {
-  openModalBtn.addEventListener('click', () => toggleModal(true));
-  closeModalBtn.addEventListener('click', () => toggleModal(false));
-  cancelBtn.addEventListener('click', () => toggleModal(false));
-
-  modalOverlay.addEventListener('click', (event) => {
-    if (event.target === modalOverlay) {
-      toggleModal(false);
-    }
-  });
+function toggleModal(show) {
+  if (show) {
+    modalOverlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  } else {
+    modalOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
+    resetForm();
+  }
+}
+function resetForm() {
+  document.getElementById('editTaskId').value = '';
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDesc').value = '';
+  document.getElementById('taskStatus').value = 'todo';
+  document.getElementById('taskPriority').value = 'medium';
+  document.getElementById('taskDue').value = '';
+  populateAssigneeSelect('');
+  populateProjectSelect('');
+  document.getElementById('modalTitle').textContent = 'New Task';
 }
 
-// Save task button
-if (saveTaskBtn) {
-  saveTaskBtn.addEventListener('click', () => {
-    const editTaskId = document.getElementById('editTaskId')?.value;
-    const title = document.getElementById('taskTitle')?.value;
-    const desc = document.getElementById('taskDesc')?.value;
-    const status = document.getElementById('taskStatus')?.value || 'todo';
-    const priority = document.getElementById('taskPriority')?.value || 'medium';
-    const dueDate = document.getElementById('taskDue')?.value;
-    const assignee = document.getElementById('taskAssignee')?.value;
-
-    if (!title) {
-      alert('Please enter a task title');
-      return;
-    }
-
-    if (editTaskId) {
-      // Update existing task
-      let tasks = initializeTasks();
-      const taskIndex = tasks.findIndex(t => t.id === editTaskId);
-      if (taskIndex >= 0) {
-        tasks[taskIndex] = { ...tasks[taskIndex], title, description: desc, status, priority, dueDate, assignee };
-        saveTasks(tasks);
-      }
-      document.getElementById('editTaskId').value = '';
-      document.getElementById('modalTitle').textContent = 'New Task';
-    } else {
-      // Add new task
-      addTask({ title, description: desc, status, priority, dueDate, assignee });
-    }
-    
-    // Reset form and close modal
-    document.getElementById('taskTitle').value = '';
-    document.getElementById('taskDesc').value = '';
-    document.getElementById('taskDue').value = '';
-    document.getElementById('taskAssignee').value = '';
-    toggleModal(false);
-  });
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-  renderTasks();
-  updateBadge(initializeTasks().length);
-  updateStats();
+document.addEventListener('click', function (e) {
+  const editId = e.target.closest('[data-edit-task]')?.getAttribute('data-edit-task');
+  if (editId) { editTask(editId); return; }
+  const delId = e.target.closest('[data-del-task]')?.getAttribute('data-del-task');
+  if (delId) { deleteTask(delId); }
 });
 
-// View toggle
-if (viewGrid) {
-  viewGrid.addEventListener('click', () => {
-    currentView = 'grid';
-    viewGrid.classList.add('active');
-    viewList.classList.remove('active');
-    renderTasks();
-  });
-}
+if (openModalBtn) openModalBtn.addEventListener('click', async () => {
+  await Promise.all([fetchUsers(), fetchProjects()]);
+  populateAssigneeSelect('');
+  populateProjectSelect('');
+  toggleModal(true);
+});
+if (closeModalBtn) closeModalBtn.addEventListener('click', () => toggleModal(false));
+if (cancelBtn) cancelBtn.addEventListener('click', () => toggleModal(false));
+if (saveTaskBtn) saveTaskBtn.addEventListener('click', () => {
+  const editTaskId = document.getElementById('editTaskId').value;
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) { alert('Please enter a task title'); return; }
+  const payload = {
+    title,
+    description: document.getElementById('taskDesc').value.trim(),
+    status: document.getElementById('taskStatus').value,
+    priority: document.getElementById('taskPriority').value,
+    dueDate: document.getElementById('taskDue').value,
+    assignee: document.getElementById('taskAssignee').value,
+    projectId: document.getElementById('taskProject').value
+  };
+  if (editTaskId) updateTaskReq({ id: editTaskId, ...payload });
+  else addTask(payload);
+  toggleModal(false);
+});
 
-if (viewList) {
-  viewList.addEventListener('click', () => {
-    currentView = 'list';
-    viewList.classList.add('active');
-    viewGrid.classList.remove('active');
-    renderTasks();
-  });
-}
+if (modalOverlay) modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) toggleModal(false);
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleModal(false); });
+
+if (searchInput) searchInput.addEventListener('input', renderTasks);
+if (filterStatus) filterStatus.addEventListener('change', renderTasks);
+if (filterPriority) filterPriority.addEventListener('change', renderTasks);
+if (sortBy) sortBy.addEventListener('change', renderTasks);
+
+if (viewGrid) viewGrid.addEventListener('click', () => {
+  currentView = 'grid';
+  viewGrid.classList.add('active');
+  viewList?.classList.remove('active');
+  renderTasks();
+});
+if (viewList) viewList.addEventListener('click', () => {
+  currentView = 'list';
+  viewList.classList.add('active');
+  viewGrid?.classList.remove('active');
+  renderTasks();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetchUsers();
+  fetchProjects();
+  fetchTasks();
+});

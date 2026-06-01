@@ -1,0 +1,276 @@
+/* =======================================
+   PROFILE.CSS – Profile Page
+   Project Management System
+   ======================================= */
+
+:root {
+  --bg-deep:        #0b0917;
+  --bg-card:        rgba(255,255,255,0.04);
+  --bg-input:       rgba(255,255,255,0.04);
+  --bg-modal:       #10121a;
+  --border:         rgba(255,255,255,0.08);
+  --border-strong:  rgba(255,255,255,0.18);
+  --text-primary:   #eef2ff;
+  --text-secondary: #a5b4fc;
+  --text-muted:     #94a3b8;
+  --accent:         #6d63f5;
+  --accent-hover:   #7b6fff;
+  --accent-glow:    rgba(109,99,245,0.24);
+  --accent-soft:    rgba(109,99,245,0.16);
+  --cyan:           #06b6d4;
+  --success:        #10b981;
+  --warning:        #f59e0b;
+  --danger:         #ef4444;
+  --radius-sm:      10px;
+  --radius-md:      14px;
+  --radius-lg:      18px;
+  --transition:     0.22s ease;
+}
+
+/* ── Profile Hero ── */
+.profile-hero {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 32px 32px 28px;
+  margin-bottom: 56px;
+}
+
+.profile-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 0% 0%, rgba(109,99,245,0.30), transparent 60%),
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgba(6,182,212,0.25), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,0.03), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.profile-hero-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  width: fit-content;
+}
+
+.profile-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 5px var(--bg-card),
+    0 0 0 6px rgba(109,99,245,0.45),
+    0 8px 28px rgba(109,99,245,0.30);
+  letter-spacing: -0.02em;
+}
+
+.profile-role-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 3px solid var(--bg-card);
+}
+
+.profile-hero-info {
+  min-width: 0;
+}
+
+.profile-hero-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-hero-email {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.profile-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.profile-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Profile Grid ── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── Form ── */
+.profile-form {
+  padding: 4px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-form-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.profile-status {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color var(--transition);
+}
+
+.profile-status.success { color: var(--success); }
+.profile-status.error   { color: var(--danger); }
+
+/* ── Security card ── */
+.profile-security {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 4px 4px;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.security-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-strong);
+}
+
+.security-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.security-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.security-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.security-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.security-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(109,99,245,0.30);
+}
+
+.security-pill.manager {
+  background: rgba(6,182,212,0.15);
+  color: #67e8f9;
+  border-color: rgba(6,182,212,0.35);
+}
+
+/* ── Anchor offset for in-page edit link ── */
+#editProfile { scroll-margin-top: 24px; }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-hero-content { grid-template-columns: auto 1fr; }
+  .profile-hero-actions { grid-column: 1 / -1; justify-content: flex-start; }
+}
+
+@media (max-width: 600px) {
+  .profile-hero { padding: 24px 20px 22px; }
+  .profile-avatar { width: 80px; height: 80px; font-size: 32px; }
+  .profile-hero-name { font-size: 1.4rem; }
+  .profile-hero-content { grid-template-columns: 1fr; text-align: center; }
+  .profile-avatar-wrap { margin: 0 auto; }
+  .profile-hero-meta { justify-content: center; }
+  .profile-hero-actions { justify-content: center; }
+  .security-item { flex-wrap: wrap; }
+}

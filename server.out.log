@@ -1,0 +1,4 @@
+[Database] Connected to PostgreSQL: jdbc:postgresql://localhost:5432/pms_db
+[Database] Schema initialized from schema.sql
+Server started on port 8080 ? http://localhost:8080/
+java -cp ".;lib/postgresql.jar" MainServer

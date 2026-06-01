@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Details – ProManage</title>
+  <link rel="stylesheet" href="css/dashbord.css" />
+  <link rel="stylesheet" href="css/project.css" />
+  <script src="js/role_guard.js" defer></script>
+  <script src="js/nav.js" defer></script>
+  <script src="js/project-details.js" defer></script>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <a href="dashbord_manager.html" class="sidebar-brand">
+      <img src="assets/images/brand-logo.png" alt="ProManage" />
+      <span class="sidebar-brand-name">ProManage</span>
+    </a>
+    <nav class="sidebar-nav" aria-label="Manager navigation">
+      <span class="nav-section-label">Main</span>
+      <a href="dashbord_manager.html" class="nav-item" id="nav-dashboard"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a href="project.html" class="nav-item" id="nav-projects"><span class="nav-icon">📁</span> Projects<span class="nav-badge" id="badge-projects">0</span></a>
+      <a href="task.html" class="nav-item" id="nav-tasks"><span class="nav-icon">✅</span> Tasks<span class="nav-badge" id="badge-tasks">0</span></a>
+      <a href="team.html" class="nav-item" id="nav-team"><span class="nav-icon">👥</span> Team</a>
+      <a href="files.html" class="nav-item" id="nav-files"><span class="nav-icon">📎</span> Files</a>
+      <span class="nav-section-label" style="margin-top:12px;">Account</span>
+      <a href="notification.html" class="nav-item" id="nav-notifications"><span class="nav-icon">🔔</span> Notifications<span class="nav-badge" id="badge-notif">0</span></a>
+      <a href="profile.html" class="nav-item" id="nav-profile"><span class="nav-icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="profile.html" class="sidebar-user" title="View profile">
+        <div class="sidebar-user-avatar" id="sidebarAvatar">U</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarName">User</div>
+          <div class="sidebar-user-role">Project Member</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:14px;">⚙️</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="dashboard-root">
+    <header class="topbar">
+      <h1 class="topbar-title" id="projectTitle">Project Details</h1>
+    </header>
+    <main class="main-content" id="mainContent">
+
+      <section class="dash-card" id="projectCard">
+        <div class="card-header">
+          <span class="card-title">Overview</span>
+          <span><a href="project.html" style="color:var(--text-muted);text-decoration:none;">← Back to projects</a></span>
+        </div>
+        <div id="projectDetail"></div>
+      </section>
+
+      <section class="dash-card">
+        <div class="card-header">
+          <span class="card-title">Tasks</span>
+          <button class="btn-primary" id="openTaskModalBtn" type="button" data-requires="manager">+ Add Task</button>
+        </div>
+        <div id="taskList"></div>
+      </section>
+
+      <section class="dash-card">
+        <div class="card-header">
+          <span class="card-title">Comments</span>
+          <select id="commentTaskSelect"><option value="">— Select a task —</option></select>
+        </div>
+        <div id="commentList"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <input type="text" id="newCommentText" placeholder="Write a comment…" style="flex:1;padding:8px 12px;border-radius:6px;background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border);" />
+          <button class="btn-primary" id="addCommentBtn" type="button">Post</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="taskModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>New Task</h2>
+        <button class="modal-close" id="closeTaskModalBtn" type="button" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editTaskId" />
+        <div class="form-group">
+          <label for="taskTitle">Title <span class="required">*</span></label>
+          <input type="text" id="taskTitle" />
+        </div>
+        <div class="form-group">
+          <label for="taskDesc">Description</label>
+          <textarea id="taskDesc" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskStatus">Status</label>
+            <select id="taskStatus">
+              <option value="todo">To-Do</option>
+              <option value="inprogress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="taskPriority">Priority</label>
+            <select id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskDue">Due Date</label>
+            <input type="date" id="taskDue" />
+          </div>
+          <div class="form-group">
+            <label for="taskAssignee">Assign To</label>
+            <select id="taskAssignee">
+              <option value="">— Unassigned —</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelTaskBtn" type="button">Cancel</button>
+        <button class="btn-primary" id="saveTaskBtn" type="button">Save Task</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
