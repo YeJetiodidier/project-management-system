@@ -12,7 +12,8 @@ public class MainServer {
     public static void main(String[] args) throws Exception {
         setupDummyData();
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/", new StaticFileHandler());
         server.createContext("/api/auth/login", new AuthHandler());
@@ -28,7 +29,7 @@ public class MainServer {
 
         server.setExecutor(null);
         server.start();
-        System.out.println("Server started on port 8080 \u2192 http://localhost:8080/");
+        System.out.println("Server started on port " + port + " \u2192 http://localhost:" + port + "/");
     }
 
     private static void setupDummyData() {
