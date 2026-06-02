@@ -3,8 +3,27 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * ApiHandler - a small utility class for JSON (de)serialisation.
+ *
+ * OOP Concepts Demonstrated:
+ *  - ABSTRACTION: The class hides the JSON grammar and the reflection
+ *    details. Callers just hand any object to toJson() or any JSON
+ *    string to parseJson() and get a usable result back.
+ *  - POLYMORPHISM: toJson() uses the parameter type 'Object' and
+ *    runtime 'instanceof' checks (String, Number, Boolean, Date, List,
+ *    Map, custom bean) to behave differently for each kind of input.
+ *    This is a classic example of runtime (ad-hoc) polymorphism.
+ *  - EXCEPTION HANDLING: parseJson()/toJson() swallow IllegalAccessException
+ *    thrown by reflection so that a single bad field does not break
+ *    the entire serialisation of an object.
+ */
 public class ApiHandler {
-    
+
+    // ─── POLYMORPHISM (Ad-hoc / Runtime) ────────────────────────────
+    // toJson() accepts an 'Object' and selects a serialisation strategy
+    // at runtime based on the actual subtype. The same method name
+    // produces a different result depending on the input type.
     public static String toJson(Object obj) {
         if (obj == null) return "null";
         if (obj instanceof String) return "\"" + escapeJson((String)obj) + "\"";
@@ -35,7 +54,14 @@ public class ApiHandler {
             return sb.toString();
         }
         
-        // Reflection for custom objects
+        // ─── ABSTRACTION ─────────────────────────────────────────────
+        // Reflection-based field enumeration is hidden behind toJson().
+        // The caller does not need to know that setAccessible(true) is
+        // being used, nor that each field is read with field.get().
+        // ─── EXCEPTION HANDLING ──────────────────────────────────────
+        // The empty catch {} intentionally swallows any reflection
+        // exception so a single inaccessible field does not crash the
+        // whole serialisation. The output simply omits that field.
         StringBuilder sb = new StringBuilder("{");
         Field[] fields = obj.getClass().getDeclaredFields();
         int count = 0;
@@ -111,6 +137,11 @@ public class ApiHandler {
         return map;
     }
     
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // readStream() declares 'throws IOException' so callers upstream
+    // (the HTTP handlers in MainServer) must either catch it or
+    // propagate it further. The byte buffer / while-loop reads until
+    // end-of-stream (-1).
     public static String readStream(InputStream is) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];

@@ -1,9 +1,9 @@
 import java.util.*;
-
-/**
- * Task class representing a task within a project
- */
 public class Task {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Private fields. They cannot be touched directly from outside the
+    // class — all mutations must go through the setter methods or the
+    // controlled methods (markDone, updateStatus) further down.
     private String id;
     private String title;
     private String description;
@@ -14,6 +14,10 @@ public class Task {
     private String projectId;
     private String createdAt;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Three constructors with different parameter lists. The Java compiler
+    // chooses the right one at the call site based on the argument count
+    // and types — a classic example of compile-time polymorphism.
     public Task() {
         this.id = generateId();
         this.createdAt = new Date().toInstant().toString();
@@ -61,6 +65,10 @@ public class Task {
         return assignTask();
     }
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // updateStatus() hides the validation rule inside isValidStatus().
+    // Callers don't need to know which status strings are valid; they
+    // call updateStatus() and the object silently rejects bad values.
     public void updateStatus(String newStatus) {
         if (isValidStatus(newStatus)) { this.status = newStatus; }
     }

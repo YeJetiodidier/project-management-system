@@ -1,9 +1,8 @@
 import java.util.*;
-
-/**
- * File class representing a file in the project management system
- */
 public class File {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Private fields. The owner/have references to User demonstrate
+    // 'has-a' composition; both stay private and accessed via getters.
     private String id;
     private String filename;
     private String url;
@@ -15,6 +14,10 @@ public class File {
     private String projectId;
     private String comment;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Two constructors with different parameter lists let callers create
+    // a File in two different ways. The compiler picks the matching one
+    // based on the arguments — compile-time polymorphism.
     public File() {
         this.id = generateId();
     }

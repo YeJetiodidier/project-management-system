@@ -1,6 +1,9 @@
 import java.util.*;
 
 public class Message {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // All fields are private. The public getters/setters at the bottom
+    // are the only legal way for other classes to touch them.
     private String id;
     private String senderId;
     private String receiverId;
@@ -8,6 +11,10 @@ public class Message {
     private String sentAt;
     private String projectId;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // The second constructor calls this() — chaining constructors is
+    // another form of reuse. Combined with the no-arg constructor, the
+    // class offers two distinct creation paths.
     public Message() {
         this.id = UUID.randomUUID().toString();
         this.sentAt = new Date().toInstant().toString();

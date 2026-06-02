@@ -5,9 +5,15 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // The Connection and the boolean flag are private: external code
+    // cannot reach in and close the connection or flip the 'connected'
+    // state. It must go through connect()/disconnect() instead.
     private Connection connection;
     private boolean connected;
 
+    // In-memory fallbacks. Private so the rest of the system can only
+    // touch them through the typed getters/setters provided further down.
     private List<User> users;
     private List<Project> projects;
     private List<Task> tasks;
@@ -30,6 +36,10 @@ public class Database {
         messages = new ArrayList<>();
         milestones = new ArrayList<>();
         activityLogs = new ArrayList<>();
+        // ─── EXCEPTION HANDLING ──────────────────────────────────────
+        // A broad try/catch around the database bootstrap means the
+        // application can still start even when PostgreSQL is missing
+        // or unreachable. It falls back to the in-memory lists above.
         try {
             loadConfigAndConnect();
             if (connected) initializeSchema();
@@ -39,6 +49,11 @@ public class Database {
         }
     }
 
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // All JDBC calls in this class sit inside try/catch (Exception)
+    // blocks. If PostgreSQL is unreachable, a credentials file is
+    // missing, or a query is malformed, the program continues using
+    // the in-memory lists instead of crashing.
     private void loadConfigAndConnect() {
         String url = "jdbc:postgresql://localhost:5432/pms_db";
         String user = "postgres";
@@ -96,6 +111,13 @@ public class Database {
 
     // ─── User operations ─────────────────────────────────────────────
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // saveUser(...) hides both storage backends. The caller only knows
+    // it provided a User; the method decides whether to issue SQL or
+    // append to the in-memory list.
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // The try-with-resources (PreparedStatement) and catch (SQLException)
+    // make sure SQL errors do not propagate out of the method.
     public void saveUser(User user) {
         if (ok()) {
             String sql = "INSERT INTO users (id, email, name, role, username, user_id, password, created_at) VALUES (?,?,?,?,?,?,?,NOW()) ON CONFLICT (id) DO UPDATE SET email=EXCLUDED.email, name=EXCLUDED.name, role=EXCLUDED.role, username=EXCLUDED.username, user_id=EXCLUDED.user_id, password=EXCLUDED.password";
@@ -1074,6 +1096,11 @@ public class Database {
         }
     }
 
+    // ─── POLYMORPHISM (Cross-class collaboration) ───────────────────
+    // notify() is a small example of polymorphism in action: it creates
+    // a Notification (subclass-friendly via the protected 'message'
+    // field) and then calls saveNotification() — the correct method is
+    // selected at runtime by the type of the object passed in.
     public void notify(String userId, String message, String type, String relatedTaskId) {
         if (userId == null || userId.isEmpty() || message == null) return;
         Notification n = new Notification(message, type != null ? type : "info");

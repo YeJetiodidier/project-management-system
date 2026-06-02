@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ProjectBackend class - main backend for project management operations
- */
 public class ProjectBackend {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Private fields. External code cannot directly add users or tasks
+    // to the lists — they must go through addTask(), manageProject(),
+    // or the controlled setters.
     private String projectName;
     private int projectId;
     private List<User> users;
@@ -19,6 +20,11 @@ public class ProjectBackend {
         this.database = new Database();
     }
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // manageProject() hides the three different operations
+    // (create / assignUsers / calculateProgress) behind a single
+    // method signature. Callers only need to know the operation
+    // string and the input data; the dispatch logic is internal.
     public double manageProject(String operationType, List<User> newUsers) {
         if (operationType.equalsIgnoreCase("create")) {
             System.out.println("Project created successfully");
@@ -57,6 +63,12 @@ public class ProjectBackend {
         System.out.println("Total Tasks: " + tasks.size());
     }
     public double getProjectProgress() { return manageProject("calculateProgress", null); }
+    // ─── POLYMORPHISM (Interface-typed references) ───────────────────
+    // The return types are List<Task> / List<User> (interfaces), while
+    // the actual runtime objects are ArrayList<Task> / ArrayList<User>
+    // (concrete classes). Code that consumes these results depends on
+    // the List interface, not the implementation — a typical example
+    // of polymorphism via interface typing.
     public List<Task> getProjectTasks() { return new ArrayList<>(tasks); }
     public List<User> getProjectUsers() { return new ArrayList<>(users); }
     public void updateProjectName(String newName) { this.projectName = newName; }

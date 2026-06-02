@@ -1,10 +1,10 @@
 import java.util.*;
 
-/**
- * User class representing a project management system user
- * Supports two roles: Project Manager and Project Member
- */
 public class User {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Fields are 'private' so they cannot be modified directly from outside
+    // the class. Access is controlled through the public getters/setters below,
+    // which also lets us add validation, hashing, or logging in one place.
     private String id;
     private String email;
     private String username;
@@ -14,6 +14,10 @@ public class User {
     private String name;
     private Date createdAt;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Multiple constructors with different parameter lists give callers
+    // several ways to instantiate a User object. The compiler picks the
+    // right one based on the arguments provided at the call site.
     /**
      * Default constructor
      */
@@ -31,6 +35,10 @@ public class User {
         this.createdAt = new Date();
     }
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // login() hides the credential-comparison details. Callers only need
+    // to know that they pass an email/password and get back a boolean;
+    // they don't see the hash comparison logic inside.
     /**
      * Login method - validates credentials by email and password only
      */
@@ -59,6 +67,11 @@ public class User {
         this.createdAt = new Date();
     }
 
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // The try/catch wraps the cryptographic operations so that if the
+    // SHA-256 algorithm is unavailable (NoSuchAlgorithmException) or any
+    // other error occurs, the method gracefully falls back to the raw
+    // password instead of crashing the program.
     /**
      * Hash the password string with SHA-256.
      */
@@ -130,7 +143,10 @@ public class User {
         return UUID.randomUUID().toString();
     }
 
-    // Getters and Setters
+    // ─── ENCAPSULATION (Getters & Setters) ────────────────────────────
+    // Public accessor/mutator methods are the controlled gateway to the
+    // private fields above. Notice setPassword() automatically hashes the
+    // input — a good example of encapsulating business rules around data.
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getEmail() { return email; }

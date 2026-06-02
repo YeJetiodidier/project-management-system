@@ -1,22 +1,29 @@
 import java.util.*;
 
-/**
- * DashboardController class handling dashboard-related operations
- */
 public class Dashboardcontroller {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // 'database' is private; the controller hides the storage details
+    // and only exposes summary methods to the rest of the system.
     private String userid; // per UML
     private Object projectdata; // per UML
     public Object taskdata; // public per UML
     private Database database;
 
-    public Dashboardcontroller() { 
-        this.database = new Database(); 
-    }
-    
-    public Dashboardcontroller(Database db) { 
-        this.database = db; 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Two constructors: one builds a fresh Database, the other accepts
+    // a shared instance (a small example of dependency injection).
+    public Dashboardcontroller() {
+        this.database = new Database();
     }
 
+    public Dashboardcontroller(Database db) {
+        this.database = db;
+    }
+
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // getDashboard() hides the multi-step data assembly (look up user,
+    // gather tasks, gather projects) inside a single call. Callers
+    // just receive a Map<String, Object> ready to be serialised.
     public Object getDashboard(String userId) {
         this.userid = userId;
         Map<String, Object> dashboard = new HashMap<>();
@@ -74,6 +81,9 @@ public class Dashboardcontroller {
         return processTaskData(taskdata);
     }
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // aggregateDatabaseData() hides the SQL/statistic calls behind
+    // a single Map return value, abstracting away the data source.
     public Object aggregateDatabaseData() {
         Map<String, Object> aggregatedData = new HashMap<>();
         aggregatedData.put("totalProjects", database.getTotalProjects());

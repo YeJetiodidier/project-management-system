@@ -1,9 +1,10 @@
 import java.util.*;
 
-/**
- * Project class representing a project in the project management system
- */
 public class Project {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Every field below is 'private'. External code can only read or modify
+    // them through the public getters/setters further down — this keeps
+    // invariants (e.g. progress between 0 and 100) inside the class.
     private String id;
     private String name;
     private String description;
@@ -15,6 +16,10 @@ public class Project {
     private float progress;
     private List<String> teamMembers;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // The three constructors have different parameter lists, so the Java
+    // compiler picks the right one at the call site. This is compile-time
+    // polymorphism (also called method/constructor overloading).
     public Project() {
         this.id = generateId();
         this.createdAt = new Date().toInstant().toString();
@@ -42,10 +47,14 @@ public class Project {
         this.teamMembers = new ArrayList<>();
     }
 
-    public float calculateProgress() { 
-        return this.progress; 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // updateProgress() hides the validation rule (0-100 range) inside
+    // the method body. Callers do not need to know about the bounds; they
+    // just call the method and trust the object to keep itself consistent.
+    public float calculateProgress() {
+        return this.progress;
     }
-    
+
     /**
      * Alias for calculation to match UML
      */

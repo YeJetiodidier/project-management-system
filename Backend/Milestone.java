@@ -1,12 +1,21 @@
 import java.util.*;
 
 public class Milestone {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Fields are private. Status defaults are applied inside the
+    // constructors, keeping the object valid from the moment it is
+    // created and preventing external code from leaving it in a
+    // half-initialised state.
     private String id;
     private String name;
     private String deadline;
     private String projectId;
     private String status;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // The (name, projectId) constructor calls this() to reuse the
+    // default id/status initialisation. Two different parameter lists
+    // mean two different ways to instantiate the class.
     public Milestone() {
         this.id = UUID.randomUUID().toString();
         this.status = "pending";

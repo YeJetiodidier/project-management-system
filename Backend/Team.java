@@ -1,18 +1,22 @@
 import java.util.*;
 
-/**
- * Team class representing a team in the project management system
- */
 public class Team {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Private fields. Direct access is forbidden; addMember(),
+    // removeMember(), and updateLeader() guard the internal list and
+    // enforce rules like 'the leader cannot be removed'.
     private String id;
     private String name;
     private List<String> members;
     private String leader;
     private Date createdAt;
 
-    public Team() { 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Two constructors with different parameter lists, giving callers
+    // a choice between an empty Team and a Team that already has a leader.
+    public Team() {
         this.id = generateId();
-        this.members = new ArrayList<>(); 
+        this.members = new ArrayList<>();
         this.createdAt = new Date();
     }
 

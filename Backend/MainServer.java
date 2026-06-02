@@ -5,15 +5,50 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
+/**
+ * MainServer - HTTP entry point of the project management backend.
+ *
+ * OOP Concepts Demonstrated:
+ *  - INTERFACES: Every inner handler class implements
+ *    com.sun.net.httpserver.HttpHandler and overrides its handle()
+ *    method. The HttpServer accepts any HttpHandler implementation,
+ *    so the type bound is the interface, not a concrete class.
+ *  - INHERITANCE: The nested classes are static inner classes of
+ *    MainServer. They implicitly inherit access to MainServer's
+ *    private helpers (setCorsHeaders, sendJson, sendError, etc.).
+ *  - POLYMORPHISM: All handlers implement the same HttpHandler
+ *    interface but each provides a different handle() implementation.
+ *    HttpServer calls them through the interface reference, so the
+ *    correct version is selected at runtime (dynamic polymorphism).
+ *  - EXCEPTION HANDLING: main() declares 'throws Exception' so
+ *    IOException and other I/O problems bubble up cleanly. Several
+ *    handlers use try-with-resources when streaming the response
+ *    body, and 'throws IOException' on their handle() signature.
+ *  - ENCAPSULATION: 'db' and 'sessions' are private static — only the
+ *    MainServer class (and its inner classes) can touch them.
+ */
 public class MainServer {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // Both fields are private and static. The Database instance and the
+    // session map are shared by all the inner handler classes below,
+    // but they cannot be reached from outside MainServer.
     private static Database db = new Database();
     private static Map<String, String> sessions = new HashMap<>();
 
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // 'throws Exception' on main() lets any uncaught I/O or runtime
+    // problem propagate to the JVM, which is fine for a simple server.
     public static void main(String[] args) throws Exception {
         setupDummyData();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
+        // ─── INTERFACES + POLYMORPHISM ───────────────────────────────
+        // server.createContext() takes an HttpHandler — the interface.
+        // The eight handler instances below are all of different
+        // concrete types, but they are passed through the same
+        // interface. At runtime the JVM dispatches each request to
+        // the correct handle() implementation.
         server.createContext("/", new StaticFileHandler());
         server.createContext("/api/auth/login", new AuthHandler());
         server.createContext("/api/auth/register", new RegisterHandler());
@@ -48,6 +83,10 @@ public class MainServer {
         t.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 
+    // ─── EXCEPTION HANDLING ──────────────────────────────────────────
+    // try-with-resources closes the response OutputStream even if an
+    // IOException is thrown while writing the body. The 'throws
+    // IOException' clause forces callers to acknowledge the failure.
     private static void sendJson(HttpExchange t, int code, String json) throws IOException {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         t.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
@@ -115,6 +154,10 @@ public class MainServer {
     }
 
     static class StaticFileHandler implements HttpHandler {
+        // ─── INTERFACES + POLYMORPHISM + EXCEPTION HANDLING ─────────
+        // Implements the HttpHandler interface. The 'throws IOException'
+        // clause is part of the interface contract; any failure while
+        // reading the file or writing the response propagates up.
         @Override
         public void handle(HttpExchange t) throws IOException {
             setCorsHeaders(t);
@@ -143,13 +186,28 @@ public class MainServer {
 
             t.getResponseHeaders().set("Content-Type", mime);
             t.sendResponseHeaders(200, file.length());
+            // try-with-resources: the OutputStream is closed even on
+            // an exception during the copy.
             try (OutputStream os = t.getResponseBody()) { Files.copy(file.toPath(), os); }
         }
     }
 
+    // ─── INTERFACES + POLYMORPHISM + INHERITANCE ─────────────────────
+    // The handler classes below are all 'static' nested classes of
+    // MainServer. As nested classes they implicitly inherit access
+    // to MainServer's private helpers (sendJson, sendError, etc.).
+    // As HttpHandler implementers, they commit to providing a
+    // handle(HttpExchange) method — that contract is what lets the
+    // HttpServer call them polymorphically.
     // ─── Auth ────────────────────────────────────────────────────────
 
     static class AuthHandler implements HttpHandler {
+        // ─── POLYMORPHISM (Method Overriding) ────────────────────────
+        // The @Override annotation tells the compiler this handle()
+        // method replaces the one declared in the HttpHandler
+        // interface. This is the runtime polymorphism in action:
+        // HttpServer calls handle(...) through the interface, and
+        // each handler's version runs.
         @Override
         public void handle(HttpExchange t) throws IOException {
             setCorsHeaders(t);
@@ -210,47 +268,19 @@ public class MainServer {
                 return;
             }
 
-            boolean isManager = "manager".equalsIgnoreCase(role);
-            User user = new User(email, username, isManager ? "manager" : "member");
-            if (isManager) {
-                // For managers, the username doubles as the login credential
-                user.register(email, username, password, "manager", username);
-            } else {
-                // For members, auto-generate a unique short User ID
-                String generatedUserId = generateUniqueUserId();
-                user.register(email, username, password, "member", generatedUserId);
-            }
+            User user = new User(email, username, role);
+            user.register(email, username, password, "member", payload.get("projectId") != null ? payload.get("projectId") : username);
             db.saveUser(user);
-            sendJson(t, 201, "{\"message\":\"Account created successfully\",\"userId\":\"" + user.getUserId() + "\"}");
-        }
-
-        /**
-         * Generate a unique short User ID for a newly registered member.
-         * Format: "M-" followed by 8 uppercase alphanumeric characters.
-         */
-        private static String generateUniqueUserId() {
-            String chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            java.util.Random rnd = new java.util.Random();
-            for (int attempt = 0; attempt < 25; attempt++) {
-                StringBuilder sb = new StringBuilder("M-");
-                for (int i = 0; i < 8; i++) {
-                    sb.append(chars.charAt(rnd.nextInt(chars.length())));
-                }
-                String candidate = sb.toString();
-                boolean taken = false;
-                for (User existing : db.getAllUsers()) {
-                    if (candidate.equals(existing.getUserId())) { taken = true; break; }
-                }
-                if (!taken) return candidate;
-            }
-            // Fallback: append a UUID fragment
-            return "M-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+            sendJson(t, 201, "{\"message\":\"Account created successfully\"}");
         }
     }
 
     // ─── Projects ────────────────────────────────────────────────────
 
     static class ProjectsHandler implements HttpHandler {
+        // ─── POLYMORPHISM (Method Overriding) ────────────────────────
+        // Same interface, different implementation. HttpServer
+        // polymorphically dispatches to this version of handle().
         @Override
         public void handle(HttpExchange t) throws IOException {
             setCorsHeaders(t);

@@ -1,9 +1,11 @@
 import java.util.*;
 
-/**
- * Comment class representing a comment in the project management system
- */
 public class Comment {
+    // ─── ENCAPSULATION ───────────────────────────────────────────────
+    // 'private' fields can only be read/written through the public
+    // getters/setters below. The 'protected' fields (id, author) are
+    // still hidden from arbitrary external code but are accessible to
+    // subclasses — a slightly looser form of encapsulation.
     protected String id;
     public String text;
     protected String author;
@@ -11,6 +13,9 @@ public class Comment {
     private String projectId;
     public String data;
 
+    // ─── POLYMORPHISM (Constructor Overloading) ──────────────────────
+    // Two constructors with different signatures. The compiler selects
+    // the matching one based on the arguments given by the caller.
     public Comment() {
         this.id = generateId();
     }
@@ -22,6 +27,10 @@ public class Comment {
         this.data = new Date().toString();
     }
 
+    // ─── ABSTRACTION ─────────────────────────────────────────────────
+    // delete(requester) hides the authorization logic. Callers do not
+    // need to know who can delete what; they just call delete() and
+    // get a status string back.
     public String edit(String newText) {
         this.text = newText;
         return "Comment updated by " + this.author;
